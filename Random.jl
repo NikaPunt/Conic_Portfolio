@@ -1,11 +1,19 @@
 # import Pkg; # We are going to install the packages CSV and DataFrames
 # Pkg.add("CSV")
 # Pkg.add("DataFrames")
+# Pkg.add("Plots")
+# Pkg.add("JuMP")
+# Pkg.add("Ipopt")
+# Pkg.add("AmplNLWriter")
 using CSV
 using DataFrames
 using Statistics
 using Plots
-cd("/home/nikap/Desktop/individual_stocks_5yr")
+using JuMP # language
+using AmplNLWriter # interface
+using Ipopt # solver
+cd("C:\\Users\\nikap\\Desktop\\Conic_Portfolio")
+# cd("/home/nikap/Desktop/Conic_Portfolio") # On Linux
 
 
 struct Asset
@@ -16,19 +24,23 @@ struct Asset
 end
 
 # Now let's read in the stock information
-csv_reader = CSV.File("all_stocks_5yr.csv")
-df = DataFrame(csv_reader)
-uniqueNames = unique(csv_reader.Name) 
-nrAssets = length(470) #This would've been uniqueNames if every asset was recorded at the same time
-AssetArray = Array{Asset}(undef,nrAssets)
+csv_reader = CSV.File("all_stocks_5yr.csv");
+df = DataFrame(csv_reader);
+uniqueNames = unique(csv_reader.Name);
+nrAssets = length(uniqueNames);
+AssetArray = Array{Asset}(undef,470); #This would've been uniqueNames if every asset was recorded at the same time
+j = 0;
+volume = zeros(470)
 for i = 1:nrAssets
     name = uniqueNames[i]
     A = df[df.Name .== name,:]
     if length(A.close) == 1259
-        returns = diff(A.close)./A.close[1:end-1]
-        gemiddelde = mean(returns)
-        volatiliteit = std(returns)
-        AssetArray[i] = Asset(name,returns,gemiddelde,volatiliteit)
+        j += 1
+        # returns = diff(A.close)./A.close[1:end-1]
+        # gemiddelde = mean(returns)
+        # volatiliteit = std(returns)
+        # AssetArray[j] = Asset(name,returns,gemiddelde,volatiliteit)
+        volume[j] = A.volume[i]
     end
 end
 
@@ -47,27 +59,37 @@ plot(vols(AssetArray), means(AssetArray),seriestype=:scatter)
 # subject to        w⋅μ = μ_required
 
 # let us discretize a bunch of values for μ_required
-μ_required = range(-0.004,stop=0.003,length=1000)
+μ_required = range(-0.001,stop=0.0025,length=100);
+σ_efficient = zeros(100);
 
-# and also acquire the Σ matrix
-Σ = var(hcat(returns(AssetArray)...))
-
-
-
-
+# and also acquire the Σ matrix and μ vector
+Σ = cov(hcat(returns(AssetArray)...));
+μ = means(AssetArray);
 
 
-
-
-
-
-
-
-B = unique([length(a) for a in returns(AssetArray)])
-
-A = Vector{Int64}(zeros(29))
-for i = 1:length(AssetArray)
-    lengte = length(AssetArray[i].returns)
-    index = findall(B.==Int64(lengte))[1] 
-    A[index] = Int64(A[index]) + 1
+# optimization
+model = Model();
+set_optimizer(model, Ipopt.Optimizer)
+@variable(model, w[1:470] >= 0) # you can unregister w through unregister(model, w)
+@constraint(model, lt1, sum(w) <= 1);
+@objective(model, Min, w'*Σ*w);
+for i = 1:100
+    println(i);
+    μ_i = μ_required[i];
+    @constraint(model, con, transpose(w)*μ == μ_i);
+    optimize!(model);
+    σ_efficient[i] = objective_value(model);
+    delete(model,con);
+    unregister(model,:con);
 end
+
+plot(vols(AssetArray).^2, means(AssetArray),seriestype=:scatter)
+plot!(σ_efficient,μ_required)
+
+for i = 1:3
+    w = rand(470)
+    w = w/sum(w)
+    plot!([w'*Σ*w],[w'*μ],seriestype=:scatter,seriescolor=:red)
+end
+w = volume/sum(volume);
+plot!([w'*Σ*w],[w'*μ],seriestype=:scatter,seriescolor=:purple) # s&p 500
