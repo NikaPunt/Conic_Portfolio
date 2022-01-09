@@ -12,8 +12,8 @@ using Plots
 using JuMP # language
 using AmplNLWriter # interface
 using Ipopt # solver
-cd("C:\\Users\\nikap\\Desktop\\Conic_Portfolio")
-# cd("/home/nikap/Desktop/Conic_Portfolio") # On Linux
+# cd("C:\\Users\\nikap\\Desktop\\Conic_Portfolio")
+cd("/home/nikap/Desktop/Masterthesis/Conic_Portfolio") # On Linux
 
 
 struct Asset
@@ -25,26 +25,35 @@ end
 
 # Now let's read in the stock information
 csv_reader = CSV.File("all_stocks_5yr.csv");
-df = DataFrame(csv_reader);
-uniqueNames = unique(csv_reader.Name);
-nrAssets = length(uniqueNames);
-AssetArray = Array{Asset}(undef,470); #This would've been uniqueNames if every asset was recorded at the same time
+df = DataFrame(csv_reader) # NIKE(NKE) GOOGLE(GOOGL) VISA(V) META(FB) BERKSHIRE(BRK.B)
+# uniqueNames = unique(csv_reader.Name);
+# f = open("Stock_names.txt", "w")
+# print(f, uniqueNames)
+# close(f)
+# nrAssets = length(uniqueNames);
+# AssetArray = Array{Asset}(undef,470); #This would've been uniqueNames if every asset was recorded at the same time
+# j = 0;
+# volume = zeros(470)
+uniqueNames = ["NKE","GOOGL","V","FB","BRK.B"]
+nrAssets = 5;
+AssetArray = Array{Asset}(undef,5); #This would've been uniqueNames if every asset was recorded at the same time
 j = 0;
-volume = zeros(470)
+volume = zeros(5)
 for i = 1:nrAssets
     name = uniqueNames[i]
     A = df[df.Name .== name,:]
     if length(A.close) == 1259
         j += 1
-        # returns = diff(A.close)./A.close[1:end-1]
-        # gemiddelde = mean(returns)
-        # volatiliteit = std(returns)
-        # AssetArray[j] = Asset(name,returns,gemiddelde,volatiliteit)
+        returns = diff(A.close)./A.close[1:end-1]
+        gemiddelde = 250*mean(returns)
+        volatiliteit = sqrt(250)*std(returns)
+        AssetArray[j] = Asset(name,returns,gemiddelde,volatiliteit)
         volume[j] = A.volume[i]
     end
 end
-
-ass = AssetArray[433]
+println(j)
+AssetArray
+ass = AssetArray[1]
 println("Name: ",ass.name,"\nMean: ",ass.mean,"\nVol: ",ass.vol)
 
 means(a::Vector{Asset}) = Vector{Float64}([ass.mean for ass in a])
