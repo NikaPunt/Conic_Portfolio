@@ -7,10 +7,38 @@ struct VG
     θ::Float64
 end
 
-function getVGParams(impliedparams,T)
-    v = impliedparams.v
-    s = impliedparams.s
-    k = impliedparams.k
+#getVGParams(v,s,k,T,Tnew) returns the struct VG that has the VG(σ,ν,θ) parameterization given 
+#the variance v, skewness s and kurtosis k of the returns X_T where T is a specific
+#horizon.
+#
+#Input:     v
+#           Type:           Float64
+#           Description:    Variance of returns.
+#
+#           s
+#           Type:           Float64
+#           Description:    Skewness of returns.
+# 
+#           k
+#           Type:           Float64
+#           Description:    Kurtosis of returns.
+#           
+#           T
+#           Type:           Number
+#           Description:    Time horizon of the timeseries. Per standard this is set to 1.
+#
+#           Tnew
+#           Type:           Number
+#           Description:    A new time horizon to return all VG parameters so that the VG process
+#                           models in the new time horizon. Suppose X_T were the daily returns, then
+#                           T=1 means a time horizon of one, and Tnew=20 is a time horizon of a month.
+#                           Per standard Tnew is set to 1.
+#
+#Output:    VG(σ,ν,θ)
+#           Type:           VG
+#           Description:    A three-parameter struct that contains the parameterization of a VG distribution.
+#
+function getVGParams(v::Float64,s::Float64,k::Float64,T::Number=1,Tnew::Number=1)
     if 6+3*s^2-2*k < 0
         c_1 = ((k/3)-1)*T/(v*s^2)
         c_2 = 3*((k/3-1)/s^2)-1
@@ -32,7 +60,14 @@ function getVGParams(impliedparams,T)
     θ = sign(s)*√((v/T-σ_sq)/ν)
     σ = √(σ_sq)
     # print("sigma: ",σ,"\n")
-    return VG(σ,ν,θ)
+    return VG(σ*√(Tnew),ν/Tnew,θ*Tnew)
+end
+
+function getVGParams(impliedparams,T=1,Tnew=1)
+    v = impliedparams.v
+    s = impliedparams.s
+    k = impliedparams.k
+    return getVGParams(v,s,k,T,Tnew)
 end
 
 function calculateσ(c_1,c_2,c_3)
@@ -61,3 +96,4 @@ function calculateS(a,c,d)
     end
     return realRoots
 end
+

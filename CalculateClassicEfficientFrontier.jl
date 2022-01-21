@@ -72,8 +72,8 @@ plot(vols(AssetArray), means(AssetArray),seriestype=:scatter)
 σ_efficient = zeros(100);
 
 # and also acquire the Σ matrix and μ vector
-Σ = cov(hcat(returns(AssetArray)...));
-μ = means(AssetArray);
+Σ = 20*cov(hcat(returns(AssetArray)...));
+μ = 20*means(AssetArray);
 
 
 # optimization
