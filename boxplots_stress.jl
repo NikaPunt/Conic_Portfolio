@@ -24,4 +24,4 @@ MINMAXVAR_qt = box(y=[.0212,   .0726,   .1673,   .1673,   .1673,   .1673,   .249
 
 Data = [MINVAR_qt, MAXVAR_qt, MAXMINVAR_qt, MINMAXVAR_qt]
 
-plot(Data)
+plot(Data,Layout(title="Stress parameter λ estimated on 527 hedge funds",showlegend=false))

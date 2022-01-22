@@ -1,4 +1,7 @@
+# import Pkg
+# Pkg.add("Loess")
 using Loess
+
 @enum OPTION call=1 put=2
 
 struct options

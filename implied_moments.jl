@@ -1,6 +1,9 @@
 # In implied_moments.jl the main function to use is 
 
+# import Pkg
+# Pkg.add("Distributions")
 include("options.jl")
+using Distributions
 
 struct implied_params
     v::Float64
@@ -64,4 +67,35 @@ function get_params(S0,T,q,r,calls::options,puts::options)
     s = (three -3*one*two + 2*one^3)/(v)^(3/2)
     k = (four - 4*one*three+6*one^2*two-3*one^4)/v^2
     return implied_params(v,s,k)
+end
+
+
+#get_params_timeseries_returns returns the daily variance v, skewness s and kurtosis k
+#from a Float64 matrix of daily returns.
+#
+#Input:     returnsMatrix
+#           Type:           Matrix{Float64}
+#           Description:    An n×m matrix with a timeseries of returns in each row.
+#                           The 2×7 matrix 
+#                           [[.1, .2, .3, .4, .5, .6, .7],
+#                           [.1, .2, .4, .5, .6, .3, .4]] 
+#                           has two timeseries, each with their own v,s,k matrix.
+#
+#Output:    vskMatrix
+#           Type:           Matrix{Float64}
+#           Description:    An n×3 matrix where each row coincides with the timeseries 
+#                           in returnsMatrix. Column 1, 2 and 3 contain the timeseries' v, s and k respectively.
+#
+#Note:      If you are attempting to get (v,s,k) for an independent component, remember that
+#           an ICA cannot uniquely define the variance of the component.
+#           That is why v is always ≈1.0
+function get_params_timeseries_returns(returnsMatrix::Matrix{Float64})
+    n = size(returnsMatrix,1)
+    vskMatrix = zeros(n,3)
+    for i=1:n
+        ts = returnsMatrix[i,:]
+        v,s,k = (var(ts),skewness(ts),kurtosis(ts)+3)
+        vskMatrix[i,:] = [v,s,k]
+    end
+    return vskMatrix
 end
