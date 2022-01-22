@@ -1,3 +1,5 @@
+# In implied_moments.jl the main function to use is 
+
 include("options.jl")
 
 struct implied_params
