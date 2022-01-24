@@ -122,7 +122,7 @@ set_optimizer(model, Ipopt.Optimizer)
 @objective(model, Min, w'*Σ*w);
 optimize!(model);
 σ_minimum = objective_value(model);
-ws = value.(w)
-μ_minimum = ws'*means(AssetArray)
+w_optimMPT = value.(w)
+μ_minimum = w_optimMPT'*means(AssetArray)
 
 plot!([σ_minimum],[μ_minimum],seriestype=:scatter,linewidth=2,seriescolor=:black,label="Global Minimum Variance Portfolio")

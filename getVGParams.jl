@@ -1,10 +1,11 @@
 using Polynomials
 include("implied_moments.jl")
 
-struct VG
+Base.@kwdef struct VG
     σ::Float64
     ν::Float64
     θ::Float64
+    Δt::Float64=1
 end
 
 #getVGParams(v,s,k,T,Tnew) returns the struct VG that has the VG(σ,ν,θ) parameterization given 
@@ -60,7 +61,7 @@ function getVGParams(v::Float64,s::Float64,k::Float64,T::Number=1,Tnew::Number=1
     θ = sign(s)*√((v/T-σ_sq)/ν)
     σ = √(σ_sq)
     # print("sigma: ",σ,"\n")
-    return VG(σ*√(Tnew),ν/Tnew,θ*Tnew)
+    return VG(σ=σ*√(Tnew),ν=ν/Tnew,θ=θ*Tnew,Δt=Tnew)
 end
 
 function getVGParams(impliedparams,T=1,Tnew=1)

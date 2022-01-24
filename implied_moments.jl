@@ -83,7 +83,7 @@ end
 #
 #Output:    vskMatrix
 #           Type:           Matrix{Float64}
-#           Description:    An n×3 matrix where each row coincides with the timeseries 
+#           Description:    An n×3 matrix where each row coincides with the timeseries's row in 
 #                           in returnsMatrix. Column 1, 2 and 3 contain the timeseries' v, s and k respectively.
 #
 #Note:      If you are attempting to get (v,s,k) for an independent component, remember that

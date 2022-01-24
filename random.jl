@@ -1,4 +1,4 @@
-# cd("/home/nikap/Desktop/Masterthesis/Conic_Portfolio") # On Linux
+cd("/home/nikap/Desktop/Masterthesis/Conic_Portfolio") # On Linux
 using CSV
 using DataFrames
 using Statistics
@@ -6,8 +6,8 @@ using Plots
 using IndependentComponentAnalysis
 using Loess
 using Distributions
-# using Pkg; Pkg.add("BlackBoxOptim")
-using(BlackBoxOptim)
+using LinearAlgebra
+using Optim
 
 include("ICA_assets.jl")
 include("options.jl")
@@ -85,7 +85,8 @@ function VG_IndComp2MRet(params::Vector{VG},M::Integer)
         σ = params[i].σ
         ν = params[i].ν
         θ = params[i].θ
-        g = Gamma(1/ν,1/ν)
+        Δt = params[i].Δt
+        g = Gamma(Δt*1/ν,1/ν)
         g_n = rand(g,M)
         ϵ = Normal()
         ϵ_n = rand(ϵ,M)
@@ -96,11 +97,11 @@ function VG_IndComp2MRet(params::Vector{VG},M::Integer)
     return returns
 end
 
-# V = VG_IndComp2MRet([getVGParams(pars[1,:]...,1,20),
-#                 getVGParams(pars[2,:]...,1,20),
-#                 getVGParams(pars[3,:]...,1,20),
-#                 getVGParams(pars[4,:]...,1,20),
-#                 getVGParams(pars[5,:]...,1,20)], 10000)
+V = VG_IndComp2MRet([getVGParams(pars[1,:]...,1,20),
+                getVGParams(pars[2,:]...,1,20),
+                getVGParams(pars[3,:]...,1,20),
+                getVGParams(pars[4,:]...,1,20),
+                getVGParams(pars[5,:]...,1,20)], 10000)
 
 print(3)
 V = VG_IndComp2MRet([getVGParams(pars[1,:]...),
@@ -207,92 +208,131 @@ print(4)
 
 
 # # optimization
-# model = Model();
-# set_optimizer(model, Ipopt.Optimizer)
-# @variable(model, w[1:N] >= 0) # you can unregister w through unregister(model, w)
-# @constraint(model, lt1, sum(w) == 1);
-# @objective(model, Max, GAP(w,Returns));
-# optimize!(model);
 
-const BasePenalty = 10000 # Select some large number that will dominate the "normal" fitness.
-
-function penalty_constraint_sum_x_1(x)
-    if abs(sum(x)-1) > 0 
-        return BasePenalty + abs(sum(x)-1) # Smaller penalty as we get closer to non-violation of constraint
-    else
-        return 0.0
-    end
-end
-
-function penalty_constraint_fixed_reward(x::Vector{Float64},Rs::Matrix{Float64},μₚ::Float64)
-    if abs(REWARD(x,Rs)-μₚ) > 0 
-        return BasePenalty + abs(REWARD(x,Rs)-μₚ)/(μₚ) # Smaller penalty as we get closer to non-violation of constraint
-    else
-        return 0.0
-    end
-end
-
-I = 0.0247:0.001:0.0447
+I = 0.01:0.002:0.0200
 ws = zeros(length(I),N)
 
 println("Begin optimization:")
+println("Optimize weights for gaps -")
 
-for i = 1:length(I)
+fun(x) = -GAP(x,Returns)
+x_0 = repeat([1/N], N);
+df = TwiceDifferentiable(fun, x_0)
+
+con_c!(c, x) = (c[1] = sum(x)-1; c)
+lx = zeros(N); ux = ones(N);
+lc = [0]; uc = [0];
+dfc = TwiceDifferentiableConstraints(con_c!, lx, ux, lc, uc)
+
+res = optimize(df, dfc, x_0, IPNewton())
+print("Best weights: ", Optim.minimizer(res), "\nwith gap: ", -Optim.minimum(res), "\n")
+# w = Optim.minimizer(res)
+w_optimgap = [0.1064360570943749, 0.8935639429056227, 7.633801505797622e-16, 1.1489027579482007e-15, 6.215419397489384e-16]
+gap_optim = -Optim.minimum(res)
+# plot([RISK(w_optimgap,Returns)],[REWARD(w_optimgap,Returns)],seriestype=:scatter)
+plot!([RISK(w_optimgap,Returns)],[REWARD(w_optimgap,Returns)],seriestype=:scatter)
+plot!(xlims=(0.00,0.02),ylims=(0.00,0.04))
+plot!([0,0.03],[gap_optim, gap_optim+0.03])
+
+funRISK(x) = RISK(x,Returns)
+println(1)
+μₚ = I[1]
+function con_c!(c, x)
+    c[1] = sum(x)-1
+    c[2] = REWARD(x,Returns)-μₚ
+    c
+end
+lc = [0,0]; uc = [0,0];
+x0 = rand(N)
+x0 = x0/sum(x0)
+df = TwiceDifferentiable(funRISK, x0)
+dfc = TwiceDifferentiableConstraints(con_c!, lx, ux, lc, uc)
+res = optimize(df, dfc, x0, IPNewton())
+w = Optim.minimizer(res)
+plot!([RISK(w,Returns)],[REWARD(w,Returns)],seriestype=:scatter)
+ws[1,:] = w
+
+for i = 2:length(I)
     println(i)
     μₚ = I[i]
-    my_new_fitness(x) = RISK(x,Returns) + penalty_constraint_sum_x_1(x) + penalty_constraint_fixed_reward(x,Returns,μₚ)
-    res = bboptimize(my_new_fitness; SearchRange=(0,1),NumDimensions=N,TraceMode=:silent)
-    w_best = best_candidate(res)
-    ϵᵣ = (REWARD(w_best,Returns)-μₚ)/μₚ
-    if ϵᵣ < 0.0001
-        ws[i,:] = w_best
+    function con_c!(c, x)
+        c[1] = sum(x)-1
+        c[2] = REWARD(x,Returns)-μₚ
+        c
     end
-end
+    lc = [0,0]; uc = [0,0];
+    x0 = rand(N)
+    x0 = x0/sum(x0)
+    df = TwiceDifferentiable(funRISK, x0)
+    dfc = TwiceDifferentiableConstraints(con_c!, lx, ux, lc, uc)
 
-plot([RISK(ws[i,:],Returns) for i = 1:length(I)], [REWARD(ws[i,:],Returns) for i = 1:length(I)],seriestype = :scatter)
+    res = optimize(df, dfc, x0, IPNewton())
+    w = Optim.minimizer(res)
+    ws[i,:] = w
+end
+plot!(legend=false)
+plot!([RISK(ws[i,:],Returns) for i = 1:length(I)], [REWARD(ws[i,:],Returns) for i = 1:length(I)],seriestype = :scatter,linecolor=:blue)
+
+I2 = 0.022:0.002:0.040
+ws2 = zeros(length(I2),N)
+for i = 1:length(I2)
+    println("iteration ", i, " out of ",length(I2))
+    μₚ = I2[i]
+    function con_c!(c, x)
+        c[1] = sum(x)-1
+        c[2] = REWARD(x,Returns)-μₚ
+        c
+    end
+    lc = [0,0]; uc = [0,0];
+    x0 = rand(N)
+    x0 = x0/sum(x0)
+    df = TwiceDifferentiable(funRISK, x0)
+    dfc = TwiceDifferentiableConstraints(con_c!, lx, ux, lc, uc)
+
+    res = optimize(df, dfc, x0, IPNewton())
+    w = Optim.minimizer(res)
+    ws2[i,:] = w
+end
+plot!([RISK(ws2[i,:],Returns) for i = 1:length(I2)], [REWARD(ws2[i,:],Returns) for i = 1:length(I2)],seriestype = :scatter,linecolor=:blue)
 
 CSV.write("OPT_w.txt", DataFrame(ws,:auto),header=false);
-CSV.write("OPT_Y.txt", DataFrame(Y:auto),header=false);
-CSV.write("OPT_A.txt", DataFrame(A:auto),header=false);
-CSV.write("OPT_V.txt", DataFrame(V:auto),header=false);
-CSV.write("OPT_RETURNS.txt", DataFrame(Returns:auto),header=false);
+CSV.write("OPT_Y.txt", DataFrame(Y,:auto),header=false);
+CSV.write("OPT_A.txt", DataFrame(A,:auto),header=false);
+CSV.write("OPT_V.txt", DataFrame(V,:auto),header=false);
+CSV.write("OPT_RETURNS.txt", DataFrame(Returns,:auto),header=false);
+CSV.write("OPT_pointsxy.txt", DataFrame([pointsx pointsy],:auto),header=false);
+CSV.write("OPT_ws.txt", DataFrame(ws2,:auto),header=false);
+CSV.write("OPT_w.txt", DataFrame([w_optimgap w_optimMPT],:auto),header=false);
 
-my_new_fitness(x) = RISK(x,Returns) + penalty_constraint_sum_x_1(x) + penalty_constraint_fixed_reward(x,Returns,0.001)
-res = bboptimize(my_new_fitness; SearchRange=(0,1),NumDimensions=N,TraceMode=:compact)
-w_best = best_candidate(res)
+plot(pointsx,pointsy,linewidth=3,label="Conic Efficient Frontier")
+plot!([RISK(w_optimgap,Returns)],[REWARD(w_optimgap,Returns)],seriestype=:scatter,label="Max diversified portfolio")
+plot!([0,1],[gap_optim, gap_optim+1],label="Conic max diversification line")
 
+W_id = Matrix{Float64}(LinearAlgebra.I,N,N)
+plot!([RISK(W_id[i,:],Returns) for i = 1:N], [REWARD(W_id[i,:],Returns) for i = 1:N],seriestype = :scatter,label="Stocks")
+plot!(xlims=(0.0,0.02),ylims=(0.0,0.04))
+plot!(legend=:right)
+plot!(title="Conic Efficient Frontier",xlabel="Risk c̃(a)",ylabel="Reward μₚ")
 
-res_GAP = bboptimize(my_GAP_fitness; SearchRange=(0,1),NumDimensions=N)
-w = best_candidate(res_GAP)
-GAP(w,Returns)
-sum(w)
-REWARD(w,Returns)
-RISK(w,Returns)
-penalty_constraint_fixed_reward(best_candidate(res),Returns,0.4)
-
-# fitness_RISK(x) = (RISK(x,Returns),penalty_constraint_fixed_reward(x,Returns,0.4),penalty_constraint_sum_x_1(x))
-# weightedFitness(f) = f[1]*0.02 + f[2]*0.49 + f[3]*0.49
-# res = bboptimize(fitness_RISK; Method=:borg_moea,
-#             FitnessScheme=ParetoFitnessScheme{3}(is_minimizing=true,aggregator=weightedFitness),
-#             SearchRange=(0.0, 1.0), NumDimensions=N, ϵ=0.05,
-#             MaxSteps=50000, TraceInterval=1.0, TraceMode=:compact);
+sample_ports = [(a=rand(N);a=a/sum(a);a) for i = 1:10]
+plot!([RISK(sample_ports[i],Returns) for i = 1:10],[REWARD(sample_ports[i],Returns) for i = 1:10],seriestype=:scatter,label="Sample portfolios")
 
 
-w_best = best_candidate(res)
-GAP(w_best,Returns)
-# # 0.2571354403668967
-# #  0.0009194161736479042
-# #  0.7357003504270017
-# #  0.0016068823425896975
-# #  0.0046383085455844845
+plot([RISK(w_optimgap,Returns)],[REWARD(w_optimgap,Returns)],seriestype=:scatter,label="Max diversified portfolio")
+plot!([0,1],[gap_optim, gap_optim+1],label="Conic max diversification line")
+plot!([RISK(w_optimMPT,Returns)],[REWARD(w_optimMPT,Returns)],seriestype=:scatter,label="Minimum variance portfolio")
+plot!(legend=:right)
+plot!(xlims=(0,0.15),ylims=(0,0.15))
 
-# w_uni = repeat([1/N], N)
-
-# GAP(w_best,Returns)
-# GAP([0.2571354403668967,0.0009194161736479042,0.7357003504270017,0.0016068823425896975,0.0046383085455844845], Returns)
-# GAP(w_uni,Returns)
-
-# a = rand(5)
-# w_rand = a/sum(a)
-
-# GAP(w_rand,Returns)
+μₚ = REWARD(w_optimMPT,Returns)
+function con_c!(c, x)
+    c[1] = sum(x)-1
+    c[2] = REWARD(x,Returns)-μₚ
+    c
+end
+lc = [0,0]; uc = [0,0];
+x0 = rand(N)
+x0 = x0/sum(x0)
+df = TwiceDifferentiable(funRISK, x0)
+dfc = TwiceDifferentiableConstraints(con_c!, lx, ux, lc, uc)
+res = optimize(df, dfc, x0, IPNewton())
