@@ -56,12 +56,12 @@ function getVGParams(v::Float64,s::Float64,k::Float64,T::Number=1,Tnew::Number=1
         σ_sq = calculateσ(c_1,c_2,c_3)
         # print("sigma squared: ",σ_sq,"\n")
     end
-    ν = (s^2*v^3/(T^2*(σ_sq+2*v/T)^2(v/T-σ_sq)))
+    ν = (s^2*v^3/(T^2*(σ_sq+2*v/T)^2*(v/T-σ_sq)))
     # print((v/T-σ_sq)/ν,"\n\n v: ",v,"\n\n σ_sq: ",σ_sq,"\n\n")
     θ = sign(s)*√((v/T-σ_sq)/ν)
     σ = √(σ_sq)
     # print("sigma: ",σ,"\n")
-    return VG(σ=σ*√(Tnew),ν=ν/Tnew,θ=θ*Tnew,Δt=Tnew)
+    return VG(σ=σ,ν=ν,θ=θ,Δt=Tnew)
 end
 
 function getVGParams(impliedparams,T=1,Tnew=1)

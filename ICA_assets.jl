@@ -14,7 +14,7 @@ end #returns = mixing*indcomps    and     indcomps = W'*returns
 
 function ICA_assets(returns::Matrix{Float64})
     nrAssets = size(returns)[1]
-    ica = fit(ICA, returns, nrAssets, FastICA();
+    ica = IndependentComponentAnalysis.fit(ICA, returns, nrAssets, FastICA();
                 fun       = IndependentComponentAnalysis.Tanh(),
                 do_whiten = true,
                 maxiter   = 10000,

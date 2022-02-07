@@ -86,12 +86,12 @@ function VG_IndComp2MRet(params::Vector{VG},M::Integer)
         ν = params[i].ν
         θ = params[i].θ
         Δt = params[i].Δt
-        g = Gamma(Δt*1/ν,1/ν)
+        g = Gamma(Δt*1/ν,ν)
         g_n = rand(g,M)
         ϵ = Normal()
         ϵ_n = rand(ϵ,M)
         for j = 1:M
-            returns[i,j] = θ*(g_n[j]-1)+σ*√(g_n[j])*ϵ_n[j]
+            returns[i,j] = θ*(g_n[j])+σ*√(g_n[j])*ϵ_n[j]
         end
     end
     return returns
@@ -209,7 +209,7 @@ print(4)
 
 # # optimization
 
-I = 0.01:0.002:0.0200
+I = 0.008:0.001:0.021
 ws = zeros(length(I),N)
 
 println("Begin optimization:")
@@ -227,7 +227,7 @@ dfc = TwiceDifferentiableConstraints(con_c!, lx, ux, lc, uc)
 res = optimize(df, dfc, x_0, IPNewton())
 print("Best weights: ", Optim.minimizer(res), "\nwith gap: ", -Optim.minimum(res), "\n")
 # w = Optim.minimizer(res)
-w_optimgap = [0.1064360570943749, 0.8935639429056227, 7.633801505797622e-16, 1.1489027579482007e-15, 6.215419397489384e-16]
+w_optimgap = [0.19906163286879, 0.32840144072909444, 0.32439569300690163, 0.06899830811045338, 0.0791429252847606]
 gap_optim = -Optim.minimum(res)
 # plot([RISK(w_optimgap,Returns)],[REWARD(w_optimgap,Returns)],seriestype=:scatter)
 plot!([RISK(w_optimgap,Returns)],[REWARD(w_optimgap,Returns)],seriestype=:scatter)
@@ -308,21 +308,23 @@ plot(pointsx,pointsy,linewidth=3,label="Conic Efficient Frontier")
 plot!([RISK(w_optimgap,Returns)],[REWARD(w_optimgap,Returns)],seriestype=:scatter,label="Max diversified portfolio")
 plot!([0,1],[gap_optim, gap_optim+1],label="Conic max diversification line")
 
-W_id = Matrix{Float64}(LinearAlgebra.I,N,N)
-plot!([RISK(W_id[i,:],Returns) for i = 1:N], [REWARD(W_id[i,:],Returns) for i = 1:N],seriestype = :scatter,label="Stocks")
+
 plot!(xlims=(0.0,0.02),ylims=(0.0,0.04))
 plot!(legend=:right)
+
+
+
+plot([RISK(ws[i,:],Returns) for i = 1:length(I)], [REWARD(ws[i,:],Returns) for i = 1:length(I)],linecolor=:blue,label="Efficient Frontier",lw=3)
+plot!([0,1],[gap_optim, gap_optim+1],label="Conic max diversification line",lw=2)
+plot!([RISK(w_optimgap,Returns)],[REWARD(w_optimgap,Returns)],seriestype=:scatter,label="Max diversified portfolio",markershape=:diamond,markersize=6)
+plot!([RISK(w_optimMPT,Returns)],[REWARD(w_optimMPT,Returns)],seriestype=:scatter,label="Minimum variance portfolio",markershape=:star4,markersize=6)
+W_id = Matrix{Float64}(LinearAlgebra.I,N,N)
+plot!([RISK(W_id[i,:],Returns) for i = 1:N], [REWARD(W_id[i,:],Returns) for i = 1:N],seriestype = :scatter,label="Stocks")
+sample_ports = [(a=rand(N);a=a/sum(a);a) for i = 1:5]
+plot!([RISK(sample_ports[i],Returns) for i = 1:5],[REWARD(sample_ports[i],Returns) for i = 1:5],seriestype=:scatter,label="Sample portfolios",markeralpha=0.5,markerstrokealpha=0.5)
 plot!(title="Conic Efficient Frontier",xlabel="Risk c̃(a)",ylabel="Reward μₚ")
-
-sample_ports = [(a=rand(N);a=a/sum(a);a) for i = 1:10]
-plot!([RISK(sample_ports[i],Returns) for i = 1:10],[REWARD(sample_ports[i],Returns) for i = 1:10],seriestype=:scatter,label="Sample portfolios")
-
-
-plot([RISK(w_optimgap,Returns)],[REWARD(w_optimgap,Returns)],seriestype=:scatter,label="Max diversified portfolio")
-plot!([0,1],[gap_optim, gap_optim+1],label="Conic max diversification line")
-plot!([RISK(w_optimMPT,Returns)],[REWARD(w_optimMPT,Returns)],seriestype=:scatter,label="Minimum variance portfolio")
-plot!(legend=:right)
-plot!(xlims=(0,0.15),ylims=(0,0.15))
+plot!(legend=:bottomright)
+plot!(xlims=(0,0.016),ylims=(0,0.0175))
 
 μₚ = REWARD(w_optimMPT,Returns)
 function con_c!(c, x)
