@@ -15,6 +15,7 @@ include("implied_moments.jl")
 
 
 print(1)
+names = ["BRK-B","NKE","FB","V","GOOGL"]
 csv_brk = CSV.File("BRK-B.csv");
 # csv_brk_calls = CSV.File("brkb_calls.csv");
 # csv_brk_puts = CSV.File("brkb_puts.csv");
@@ -208,10 +209,17 @@ print(4)
 
 
 # # optimization
-
-I = 0.008:0.001:0.021
+# We need to know what the lowest reward is that we can get,
+# and the highest reward that we can get. We can never be lower than
+# the stock with the lowest return (as we are not shortselling)
+# nor can we be higher than the stock with the highest reward
+W_id = Matrix{Float64}(LinearAlgebra.I,N,N) # Identity matrix
+rewardStocks = [REWARD(W_id[i,:],Returns) for i = 1:N]
+I = range(minimum(rewardStocks),maximum(rewardStocks),20)
 ws = zeros(length(I),N)
 
+
+# The following optimizes for the best gap.
 println("Begin optimization:")
 println("Optimize weights for gaps -")
 
@@ -226,13 +234,10 @@ dfc = TwiceDifferentiableConstraints(con_c!, lx, ux, lc, uc)
 
 res = optimize(df, dfc, x_0, IPNewton())
 print("Best weights: ", Optim.minimizer(res), "\nwith gap: ", -Optim.minimum(res), "\n")
-# w = Optim.minimizer(res)
+# w_optimgap = Optim.minimizer(res)
 w_optimgap = [0.19906163286879, 0.32840144072909444, 0.32439569300690163, 0.06899830811045338, 0.0791429252847606]
+# ↑↑ comment this out if you are not working with the test set ↑↑
 gap_optim = -Optim.minimum(res)
-# plot([RISK(w_optimgap,Returns)],[REWARD(w_optimgap,Returns)],seriestype=:scatter)
-plot!([RISK(w_optimgap,Returns)],[REWARD(w_optimgap,Returns)],seriestype=:scatter)
-plot!(xlims=(0.00,0.02),ylims=(0.00,0.04))
-plot!([0,0.03],[gap_optim, gap_optim+0.03])
 
 funRISK(x) = RISK(x,Returns)
 println(1)
@@ -249,11 +254,12 @@ df = TwiceDifferentiable(funRISK, x0)
 dfc = TwiceDifferentiableConstraints(con_c!, lx, ux, lc, uc)
 res = optimize(df, dfc, x0, IPNewton())
 w = Optim.minimizer(res)
-plot!([RISK(w,Returns)],[REWARD(w,Returns)],seriestype=:scatter)
 ws[1,:] = w
 
-for i = 2:length(I)
-    println(i)
+using Base.Threads: @threads, @spawn
+
+@threads for i = 2:length(I)
+    println("Thread number ",Threads.threadid()," working on iteration ",i,"/",length(I))
     μₚ = I[i]
     function con_c!(c, x)
         c[1] = sum(x)-1
@@ -270,71 +276,32 @@ for i = 2:length(I)
     w = Optim.minimizer(res)
     ws[i,:] = w
 end
-plot!(legend=false)
-plot!([RISK(ws[i,:],Returns) for i = 1:length(I)], [REWARD(ws[i,:],Returns) for i = 1:length(I)],seriestype = :scatter,linecolor=:blue)
-
-I2 = 0.022:0.002:0.040
-ws2 = zeros(length(I2),N)
-for i = 1:length(I2)
-    println("iteration ", i, " out of ",length(I2))
-    μₚ = I2[i]
-    function con_c!(c, x)
-        c[1] = sum(x)-1
-        c[2] = REWARD(x,Returns)-μₚ
-        c
-    end
-    lc = [0,0]; uc = [0,0];
-    x0 = rand(N)
-    x0 = x0/sum(x0)
-    df = TwiceDifferentiable(funRISK, x0)
-    dfc = TwiceDifferentiableConstraints(con_c!, lx, ux, lc, uc)
-
-    res = optimize(df, dfc, x0, IPNewton())
-    w = Optim.minimizer(res)
-    ws2[i,:] = w
-end
-plot!([RISK(ws2[i,:],Returns) for i = 1:length(I2)], [REWARD(ws2[i,:],Returns) for i = 1:length(I2)],seriestype = :scatter,linecolor=:blue)
-
-CSV.write("OPT_w.txt", DataFrame(ws,:auto),header=false);
-CSV.write("OPT_Y.txt", DataFrame(Y,:auto),header=false);
-CSV.write("OPT_A.txt", DataFrame(A,:auto),header=false);
-CSV.write("OPT_V.txt", DataFrame(V,:auto),header=false);
-CSV.write("OPT_RETURNS.txt", DataFrame(Returns,:auto),header=false);
-CSV.write("OPT_pointsxy.txt", DataFrame([pointsx pointsy],:auto),header=false);
-CSV.write("OPT_ws.txt", DataFrame(ws2,:auto),header=false);
-CSV.write("OPT_w.txt", DataFrame([w_optimgap w_optimMPT],:auto),header=false);
-
-plot(pointsx,pointsy,linewidth=3,label="Conic Efficient Frontier")
-plot!([RISK(w_optimgap,Returns)],[REWARD(w_optimgap,Returns)],seriestype=:scatter,label="Max diversified portfolio")
-plot!([0,1],[gap_optim, gap_optim+1],label="Conic max diversification line")
 
 
-plot!(xlims=(0.0,0.02),ylims=(0.0,0.04))
-plot!(legend=:right)
-
-
-
-plot([RISK(ws[i,:],Returns) for i = 1:length(I)], [REWARD(ws[i,:],Returns) for i = 1:length(I)],linecolor=:blue,label="Efficient Frontier",lw=3)
-plot!([0,1],[gap_optim, gap_optim+1],label="Conic max diversification line",lw=2)
+begin
+plot([RISK(ws[i,:],Returns) for i = 1:length(I)], [REWARD(ws[i,:],Returns) for i = 1:length(I)],linecolor=:blue,label="Conic Efficient Frontier",title="Efficient Frontier",lw=3)
+plot!([0,1],[gap_optim, gap_optim+1],label="Conic max diversification line",lw=3)
 plot!([RISK(w_optimgap,Returns)],[REWARD(w_optimgap,Returns)],seriestype=:scatter,label="Max diversified portfolio",markershape=:diamond,markersize=6)
 plot!([RISK(w_optimMPT,Returns)],[REWARD(w_optimMPT,Returns)],seriestype=:scatter,label="Minimum variance portfolio",markershape=:star4,markersize=6)
+# ↑↑ comment this out if you haven't calculated the weights through MPT optimization
 W_id = Matrix{Float64}(LinearAlgebra.I,N,N)
-plot!([RISK(W_id[i,:],Returns) for i = 1:N], [REWARD(W_id[i,:],Returns) for i = 1:N],seriestype = :scatter,label="Stocks")
+plot!(
+    [RISK(W_id[i,:],Returns) for i = [1:3;5:N]], 
+    [REWARD(W_id[i,:],Returns) for i = [1:3;5:N]],
+    seriestype = :scatter,label="Stocks",
+    series_annotations=text.(names[[1:3;5:N]], :top,:left;rotation=-20.2,pointsize=8),
+    markercolor=:purple)
+plot!(
+    [RISK(W_id[4,:],Returns)], 
+    [REWARD(W_id[4,:],Returns)],
+    seriestype = :scatter,
+    label=false,
+    series_annotations=text.(names[4], :bottom,:right;rotation=-20.2,pointsize=8),
+    markercolor=:purple)
 sample_ports = [(a=rand(N);a=a/sum(a);a) for i = 1:5]
-plot!([RISK(sample_ports[i],Returns) for i = 1:5],[REWARD(sample_ports[i],Returns) for i = 1:5],seriestype=:scatter,label="Sample portfolios",markeralpha=0.5,markerstrokealpha=0.5)
+plot!([RISK(sample_ports[i],Returns) for i = 1:5],[REWARD(sample_ports[i],Returns) for i = 1:5],seriestype=:scatter,label="Randomly assembled portfolios",markeralpha=0.5,markerstrokealpha=0.5)
 plot!(title="Conic Efficient Frontier",xlabel="Risk c̃(a)",ylabel="Reward μₚ")
 plot!(legend=:bottomright)
-plot!(xlims=(0,0.016),ylims=(0,0.0175))
-
-μₚ = REWARD(w_optimMPT,Returns)
-function con_c!(c, x)
-    c[1] = sum(x)-1
-    c[2] = REWARD(x,Returns)-μₚ
-    c
+plot!(xlims=(0,0.0037),ylims=(0,0.00435))
 end
-lc = [0,0]; uc = [0,0];
-x0 = rand(N)
-x0 = x0/sum(x0)
-df = TwiceDifferentiable(funRISK, x0)
-dfc = TwiceDifferentiableConstraints(con_c!, lx, ux, lc, uc)
-res = optimize(df, dfc, x0, IPNewton())
+
