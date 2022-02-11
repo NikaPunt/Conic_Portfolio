@@ -13,7 +13,7 @@ using JuMP # language
 using AmplNLWriter # interface
 using Ipopt # solver
 # cd("C:\\Users\\nikap\\Desktop\\Conic_Portfolio")
-cd("/home/nikap/Desktop/Masterthesis/Conic_Portfolio") # On Linux
+# cd("/home/nikap/Desktop/Masterthesis/Conic_Portfolio") # On Linux
 
 
 struct Asset
@@ -85,11 +85,13 @@ plot(vols(AssetArray), means(AssetArray),seriestype=:scatter)
 
 
 # optimization
+# using Base.Threads: @threads, @spawn
 model = Model();
 set_optimizer(model, Ipopt.Optimizer)
 @variable(model, w[1:nrAssets] >= 0) # you can unregister w through unregister(model, w)
 @constraint(model, lt1, sum(w) == 1);
 @objective(model, Min, w'*Σ*w);
+
 for i = 1:100
     println(i);
     μ_i = μ_required[i];
@@ -102,6 +104,13 @@ end
 
 scatter(vols(AssetArray).^2, means(AssetArray),seriestype=:scatter,series_annotations = text.((uniqueNames), :left),xlabel="Volatility σ",ylabel="Return μ",label="Stocks",title="Efficient Frontier",legend=:bottomright)
 plot!(σ_efficient,μ_required,linewidth=2,thickness_scaling=1,seriescolor=:blue,label="Efficient Frontier")
+
+RiskFreeRate = (1.0008)^(1/30.5)-1
+findmax((μ_required.-RiskFreeRate)./σ_efficient)
+plot!([σ_efficient[70]],[μ_required[70]],seriestype=:scatter,markershape=:diamond,label="Max Sharpe Portfolio")
+
+
+
 
 nrSamplePortfolios = 10
 σ_samples = zeros(nrSamplePortfolios)
@@ -122,7 +131,7 @@ set_optimizer(model, Ipopt.Optimizer)
 @objective(model, Min, w'*Σ*w);
 optimize!(model);
 w_optimMPT = value.(w)
-σ_minimum = objective_value(model);
+σ_minimum = objective_value(model)
 μ_minimum = w_optimMPT'*means(AssetArray)
 
 plot!([σ_minimum],[μ_minimum],seriestype=:scatter,linewidth=2,seriescolor=:black,label="Global Minimum Variance Portfolio")
