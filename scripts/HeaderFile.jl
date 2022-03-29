@@ -1,5 +1,6 @@
-# cd("/home/nikap/Desktop/Masterthesis/Conic_Portfolio") # On Linux
-push!(LOAD_PATH,"C:\\Users\\nikap\\Desktop\\Conic_Portfolio\\scripts")
+# push!(LOAD_PATH,"/home/nikap/Desktop/Masterthesis/Conic_Portfolio/scripts") # On Linux
+# push!(LOAD_PATH,"C:\\Users\\nikap\\Desktop\\Conic_Portfolio\\scripts")
+push!(LOAD_PATH,pwd()*"/scripts")
 using CSV
 using DataFrames
 using Plots
@@ -7,6 +8,9 @@ using Distortions
 using Statistics
 using LinearAlgebra
 using Optim
+using JuMP # language
+using AmplNLWriter # interface
+using Ipopt # solver
 using Base.Threads: @threads, @spawn
 
 include("ICA_assets.jl")
