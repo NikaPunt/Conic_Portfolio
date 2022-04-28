@@ -1,4 +1,4 @@
 function MAXMINVAR(u,λ)
-    maxminvar = (1-(1-u)^(λ+1))^(1/(λ+1))
+    maxminvar = exp((1/(λ+1))*log(1-exp((λ+1)*log((1-u)))))
     return maxminvar
 end
