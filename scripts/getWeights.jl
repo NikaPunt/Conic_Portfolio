@@ -44,7 +44,7 @@ function getMinCVaRWeights(Rtrns::Array{Float64,2},β::Float64=0.95, short::Bool
     set_optimizer(mincvar_model, Ipopt.Optimizer)
     set_optimizer_attribute(mincvar_model, "constr_viol_tol", 1e-15)
     set_optimizer_attribute(mincvar_model, "acceptable_tol", 1e-15)
-    set_optimizer_attribute(mincvar_model, "print_level", 0)
+    set_optimizer_attribute(mincvar_model, "print_level", 5)
     # set_optimizer(mincvar_model, Clp.Optimizer) #No primal feasability
     # set_optimizer_attribute(mincvar_model, "LogLevel", 0)
     # set_optimizer_attribute(mincvar_model, "Algorithm", 4)

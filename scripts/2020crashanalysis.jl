@@ -113,10 +113,10 @@ open("data/w_optimcvar99-2020_short.txt", "w") do file
     writedlm(file, (w_optimcvar99_short))
 end
 
-a = range(0.1,stop=12.8,length=5)
-five_γ = Vector{Vector{Float64}}(undef,5)
-five_γ_short = Vector{Vector{Float64}}(undef,5)
-Threads.@threads for i = 1:5
+a = [0.001 0.14 0.4 1.0 2.6 7.0]
+five_γ = Vector{Vector{Float64}}(undef,6)
+five_γ_short = Vector{Vector{Float64}}(undef,6)
+Threads.@threads for i = 1:6
     id = Threads.threadid()
     println("Thread $id on iteration $i")
     nummer = a[i] 
@@ -152,16 +152,16 @@ begin
     indexcvar99 = DJI_val[y2k_pos+k] .*vcat(beginning, [prod(indexChangecvar99[1:i]) for i = 1:length(indexChangeMPT)])
     indexChangecvar99_short = 1 .+ allRtrns[:,y2k_pos+k:end]'*w_optimcvar99_short
     indexcvar99_short = DJI_val[y2k_pos+k] .*vcat(beginning, [prod(indexChangecvar99_short[1:i]) for i = 1:length(indexChangeMPT)])
-    indexChangefive_γ = [1 .+ allRtrns[:,y2k_pos+k:end]'*five_γ[i] for i = 1:5]
-    indexfive_γ = [1 1 1 1 1;zeros(length(indexChangeMPT),5)]
-    for i = 1:5
+    indexChangefive_γ = [1 .+ allRtrns[:,y2k_pos+k:end]'*five_γ[i] for i = 1:6]
+    indexfive_γ = [1 1 1 1 1;zeros(length(indexChangeMPT),6)]
+    for i = 1:6
         indexChangegap = indexChangefive_γ[i]
         indexfive_γ[2:end,i] = [prod(indexChangegap[1:i]) for i = 1:length(indexChangeMPT)]
     end
     indexfive_γ = DJI_val[y2k_pos+k] .*indexfive_γ
-    indexChangefive_γ_short = [1 .+ allRtrns[:,y2k_pos+k:end]'*five_γ_short[i] for i = 1:5]
-    indexfive_γ_short = [1 1 1 1 1;zeros(length(indexChangeMPT),5)]
-    for i = 1:5
+    indexChangefive_γ_short = [1 .+ allRtrns[:,y2k_pos+k:end]'*five_γ_short[i] for i = 1:6]
+    indexfive_γ_short = [1 1 1 1 1;zeros(length(indexChangeMPT),6)]
+    for i = 1:6
         indexChangegap = indexChangefive_γ_short[i]
         indexfive_γ_short[2:end,i] = [prod(indexChangegap[1:i]) for i = 1:length(indexChangeMPT)]
     end
@@ -171,11 +171,12 @@ end
 using PlotlyJS
 function plotonlyconic()
     crashdate = df_list[1]."Date"[y2k_pos+k:end]
-    one =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,1], mode="lines",name = "Conic γ=0.1")
-    two =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,2], mode="lines",name = "Conic γ=3.275")
-    three = PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,3], mode="lines",name = "Conic γ=6.45")
-    four =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,4], mode="lines",name = "Conic γ=9.625")
-    five =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,5], mode="lines",name = "Conic γ=12.8")
+    one =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,1], mode="lines",name = "Conic γ=$(a[1])")
+    two =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,2], mode="lines",name = "Conic γ=$(a[2])")
+    three = PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,3], mode="lines",name = "Conic γ=$(a[3])")
+    four =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,4], mode="lines",name = "Conic γ=$(a[4])")
+    five =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,5], mode="lines",name = "Conic γ=$(a[5])")
+    
     ten = PlotlyJS.scatter(;x=crashdate, y=DJI_val[y2k_pos+k:end], mode="lines",name = "DJIA")
     PlotlyJS.plot([one,two,three,four,five,ten])
 end

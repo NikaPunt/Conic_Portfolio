@@ -57,7 +57,7 @@ function calcMinVar(returns::Matrix{Float64},α::Float64=0.95,verbose::Bool=true
         set_optimizer(model, Ipopt.Optimizer) # Memory runs out?!
         set_optimizer_attribute(model, "constr_viol_tol", 1e-15)
         set_optimizer_attribute(model, "acceptable_tol", 1e-15)
-        set_optimizer_attribute(model, "print_level", 0)
+        set_optimizer_attribute(model, "print_level", 5)
         # set_optimizer(model, GLPK.Optimizer)
         # set_optimizer_attribute(model, "tm_lim", 60 * 1_000)
         # set_optimizer_attribute(model, "msg_lev", GLPK.GLP_MSG_OFF)
