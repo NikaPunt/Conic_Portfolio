@@ -115,18 +115,23 @@ end
 a = vec([0.001 0.14 0.4 1.0 2.6 7.0])
 five_γ = Vector{Vector{Float64}}(undef,6)
 five_γ_short = Vector{Vector{Float64}}(undef,6)
-Threads.@threads for i = 1:6
-    id = Threads.threadid()
-    println("Thread $id on iteration $i")
+# Threads.@threads for i = 1:6
+#     id = Threads.threadid()
+#     println("Thread $id on iteration $i")
+#     nummer = a[i] 
+#     five_γ[i] = getMinConicWeights(Rtrns,a[i],false)
+#     open("data/w_optimgap$nummer-2008.txt", "w") do file
+#         writedlm(file, (five_γ[i]))
+#     end 
+#     five_γ_short[i] = getMinConicWeights(Rtrns,a[i],true)
+#     open("data/w_optimgap$nummer-2008_short.txt", "w") do file
+#         writedlm(file, (five_γ_short[i]))
+#     end 
+# end
+for i = 1:6
     nummer = a[i] 
-    five_γ[i] = getMinConicWeights(Rtrns,a[i],false)
-    open("data/w_optimgap$nummer-2008.txt", "w") do file
-        writedlm(file, (five_γ[i]))
-    end 
-    five_γ_short[i] = getMinConicWeights(Rtrns,a[i],true)
-    open("data/w_optimgap$nummer-2008_short.txt", "w") do file
-        writedlm(file, (five_γ_short[i]))
-    end 
+    five_γ[i] = vec(readdlm("data/w_optimgap$nummer-2008.txt",Float64))
+    five_γ_short[i] = vec(readdlm("data/w_optimgap$nummer-2008_short.txt",Float64))
 end
 
 

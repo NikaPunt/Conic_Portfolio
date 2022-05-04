@@ -71,49 +71,49 @@ end
 w_optimMPT = getMinVolWeights(AssetArray,false)
 w_optimMPT_short = getMinVolWeights(AssetArray,true)
 
-Rtrns = simulateJointReturns(assetShiftedRtrns, 100000)
-# Rtrns = readdlm("data/Rtrns2020.txt",Float64)
+# Rtrns = simulateJointReturns(assetShiftedRtrns, 100000)
 using DelimitedFiles
-open("data/Rtrns2020.txt", "w") do io
-    writedlm(io, Rtrns)
-end
+Rtrns = readdlm("data/Rtrns2020.txt",Float64)
+# open("data/Rtrns2020.txt", "w") do io
+#     writedlm(io, Rtrns)
+# end
 
 
-w_optimvar = getMinVaRWeights(Rtrns,0.95,false)
-# w_optimvar = vec(readdlm("data/w_optimvar2020.txt",Float64))
-w_optimvar_short = getMinVaRWeights(Rtrns,0.95,true)
-# w_optimvar_short = vec(readdlm("data/w_optimvar2020_short.txt",Float64))
-w_optimcvar95 = getMinCVaRWeights(Rtrns,0.95,false)
-# w_optimcvar95 = vec(readdlm("data/w_optimcvar95-2020.txt",Float64))
-w_optimcvar95_short = getMinCVaRWeights(Rtrns,0.95,true)
-# w_optimcvar95_short = vec(readdlm("data/w_optimcvar95-2020_short.txt",Float64))
+# w_optimvar = getMinVaRWeights(Rtrns,0.95,false)
+w_optimvar = vec(readdlm("data/w_optimvar2020.txt",Float64))
+# w_optimvar_short = getMinVaRWeights(Rtrns,0.95,true)
+w_optimvar_short = vec(readdlm("data/w_optimvar2020_short.txt",Float64))
+# w_optimcvar95 = getMinCVaRWeights(Rtrns,0.95,false)
+w_optimcvar95 = vec(readdlm("data/w_optimcvar95-2020.txt",Float64))
+# w_optimcvar95_short = getMinCVaRWeights(Rtrns,0.95,true)
+w_optimcvar95_short = vec(readdlm("data/w_optimcvar95-2020_short.txt",Float64))
 
-w_optimcvar99 = getMinCVaRWeights(Rtrns,0.99,false)
-# w_optimcvar99 = vec(readdlm("data/w_optimcvar99-2020.txt",Float64))
-w_optimcvar99_short = getMinCVaRWeights(Rtrns,0.99,true)
-# w_optimcvar99_short = vec(readdlm("data/w_optimcvar99-2020_short.txt",Float64))
+# w_optimcvar99 = getMinCVaRWeights(Rtrns,0.99,false)
+w_optimcvar99 = vec(readdlm("data/w_optimcvar99-2020.txt",Float64))
+# w_optimcvar99_short = getMinCVaRWeights(Rtrns,0.99,true)
+w_optimcvar99_short = vec(readdlm("data/w_optimcvar99-2020_short.txt",Float64))
 
 
-open("data/w_optimvar2020.txt", "w") do file
-    writedlm(file, w_optimvar)
-end
-open("data/w_optimvar2020_short.txt", "w") do file
-    writedlm(file, (w_optimvar_short))
-end
-open("data/w_optimcvar95-2020.txt", "w") do file
-    writedlm(file, (w_optimcvar95))
-end
-open("data/w_optimcvar95-2020_short.txt", "w") do file
-    writedlm(file, (w_optimcvar95_short))
-end
-open("data/w_optimcvar99-2020.txt", "w") do file
-    writedlm(file, (w_optimcvar99))
-end
-open("data/w_optimcvar99-2020_short.txt", "w") do file
-    writedlm(file, (w_optimcvar99_short))
-end
+# open("data/w_optimvar2020.txt", "w") do file
+#     writedlm(file, w_optimvar)
+# end
+# open("data/w_optimvar2020_short.txt", "w") do file
+#     writedlm(file, (w_optimvar_short))
+# end
+# open("data/w_optimcvar95-2020.txt", "w") do file
+#     writedlm(file, (w_optimcvar95))
+# end
+# open("data/w_optimcvar95-2020_short.txt", "w") do file
+#     writedlm(file, (w_optimcvar95_short))
+# end
+# open("data/w_optimcvar99-2020.txt", "w") do file
+#     writedlm(file, (w_optimcvar99))
+# end
+# open("data/w_optimcvar99-2020_short.txt", "w") do file
+#     writedlm(file, (w_optimcvar99_short))
+# end
 
-a = [0.001 0.14 0.4 1.0 2.6 7.0]
+a = vec([0.001 0.14 0.4 1.0 2.6 7.0])
 five_γ = Vector{Vector{Float64}}(undef,6)
 five_γ_short = Vector{Vector{Float64}}(undef,6)
 Threads.@threads for i = 1:6
@@ -126,10 +126,15 @@ Threads.@threads for i = 1:6
     end 
     five_γ_short[i] = getMinConicWeights(Rtrns,a[i],true)
     open("data/w_optimgap$nummer-2020_short.txt", "w") do file
-        writedlm(file, (five_γ_short[i]))
+        writedlm(file, (A[i]))
     end 
 end
-
+# for i = 1:6
+#     nummer = a[i] 
+#     five_γ[i] = vec(readdlm("data/w_optimgap$nummer-2020.txt",Float64))
+#     five_γ_short[i] = vec(readdlm("data/w_optimgap$nummer-2020_short.txt",Float64))
+# end
+println("All Done")
 beginning = [1]
 
 k = 1
@@ -153,14 +158,14 @@ begin
     indexChangecvar99_short = 1 .+ allRtrns[:,y2k_pos+k:end]'*w_optimcvar99_short
     indexcvar99_short = DJI_val[y2k_pos+k] .*vcat(beginning, [prod(indexChangecvar99_short[1:i]) for i = 1:length(indexChangeMPT)])
     indexChangefive_γ = [1 .+ allRtrns[:,y2k_pos+k:end]'*five_γ[i] for i = 1:6]
-    indexfive_γ = [1 1 1 1 1;zeros(length(indexChangeMPT),6)]
+    indexfive_γ = [1 1 1 1 1 1;zeros(length(indexChangeMPT),6)]
     for i = 1:6
         indexChangegap = indexChangefive_γ[i]
         indexfive_γ[2:end,i] = [prod(indexChangegap[1:i]) for i = 1:length(indexChangeMPT)]
     end
     indexfive_γ = DJI_val[y2k_pos+k] .*indexfive_γ
     indexChangefive_γ_short = [1 .+ allRtrns[:,y2k_pos+k:end]'*five_γ_short[i] for i = 1:6]
-    indexfive_γ_short = [1 1 1 1 1;zeros(length(indexChangeMPT),6)]
+    indexfive_γ_short = [1 1 1 1 1 1;zeros(length(indexChangeMPT),6)]
     for i = 1:6
         indexChangegap = indexChangefive_γ_short[i]
         indexfive_γ_short[2:end,i] = [prod(indexChangegap[1:i]) for i = 1:length(indexChangeMPT)]
@@ -176,9 +181,9 @@ function plotonlyconic()
     three = PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,3], mode="lines",name = "Conic γ=$(a[3])")
     four =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,4], mode="lines",name = "Conic γ=$(a[4])")
     five =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,5], mode="lines",name = "Conic γ=$(a[5])")
-    
+    six =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,5], mode="lines",name = "Conic γ=$(a[6])")
     ten = PlotlyJS.scatter(;x=crashdate, y=DJI_val[y2k_pos+k:end], mode="lines",name = "DJIA")
-    PlotlyJS.plot([one,two,three,four,five,ten])
+    PlotlyJS.plot([one,two,three,four,five,six,ten])
 end
 plotonlyconic()
 
@@ -195,30 +200,39 @@ plotonlynonconic()
 
 function plotall()
     crashdate = df_list[1]."Date"[y2k_pos+k:end]
-    one =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,1], mode="lines",name = "Conic γ=0.1")
-    two =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,2], mode="lines",name = "Conic γ=3.275")
-    three = PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,3], mode="lines",name = "Conic γ=6.45")
-    four =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,4], mode="lines",name = "Conic γ=9.625")
-    five =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,5], mode="lines",name = "Conic γ=12.8")
-    six =   PlotlyJS.scatter(;x=crashdate, y=indexMPT, mode="lines",name = "Mean-Variance")
-    seven = PlotlyJS.scatter(;x=crashdate, y=indexvar, mode="lines",name = "Mean-VaR")
-    eight = PlotlyJS.scatter(;x=crashdate, y=indexcvar95, mode="lines",name = "Mean-CVaR 95%")
-    nine = PlotlyJS.scatter(;x=crashdate, y=indexcvar99, mode="lines",name = "Mean-CVaR 99%")
-    ten = PlotlyJS.scatter(;x=crashdate, y=DJI_val[y2k_pos+k:end], mode="lines",name = "DJIA")
-    PlotlyJS.plot([one,two,three,four,five,six,seven,eight,nine,ten])
+    one =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,1], mode="lines",name = "Conic γ=$(a[1])")
+    two =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,2], mode="lines",name = "Conic γ=$(a[2])")
+    three = PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,3], mode="lines",name = "Conic γ=$(a[3])")
+    four =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,4], mode="lines",name = "Conic γ=$(a[4])")
+    five =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,5], mode="lines",name = "Conic γ=$(a[5])")
+    six =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ[:,5], mode="lines",name = "Conic γ=$(a[6])")
+    seven =   PlotlyJS.scatter(;x=crashdate, y=indexMPT, mode="lines",name = "Mean-Variance")
+    eight = PlotlyJS.scatter(;x=crashdate, y=indexvar, mode="lines",name = "Mean-VaR")
+    nine = PlotlyJS.scatter(;x=crashdate, y=indexcvar95, mode="lines",name = "Mean-CVaR 95%")
+    ten = PlotlyJS.scatter(;x=crashdate, y=indexcvar99, mode="lines",name = "Mean-CVaR 99%")
+    eleven = PlotlyJS.scatter(;x=crashdate, y=DJI_val[y2k_pos+k:end], mode="lines",name = "DJIA",opacity=0.25)
+    p = PlotlyJS.plot([one,two,three,four,five,six,seven,eight,nine,ten,eleven])
+    if k == -365
+        PlotlyJS.savefig(p, "plots/2020 crash/2020all-365.html")
+    elseif k == -30
+        PlotlyJS.savefig(p, "plots/2020 crash/2020all-30.html")
+    else
+        PlotlyJS.savefig(p, "plots/2020 crash/2020all.html")
+    end
 end
 plotall()
 
 
 function plotonlyconic_short()
     crashdate = df_list[1]."Date"[y2k_pos+k:end]
-    one =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,1], mode="lines",name = "Conic γ=0.1")
-    two =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,2], mode="lines",name = "Conic γ=3.275")
-    three = PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,3], mode="lines",name = "Conic γ=6.45")
-    four =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,4], mode="lines",name = "Conic γ=9.625")
-    five =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,5], mode="lines",name = "Conic γ=12.8")
+    one =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,1], mode="lines",name = "Conic γ=$(a[1])")
+    two =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,2], mode="lines",name = "Conic γ=$(a[2])")
+    three = PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,3], mode="lines",name = "Conic γ=$(a[3])")
+    four =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,4], mode="lines",name = "Conic γ=$(a[4])")
+    five =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,5], mode="lines",name = "Conic γ=$(a[5])")
+    six =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,5], mode="lines",name = "Conic γ=$(a[6])")
     ten = PlotlyJS.scatter(;x=crashdate, y=DJI_val[y2k_pos+k:end], mode="lines",name = "DJIA")
-    PlotlyJS.plot([one,two,three,four,five,ten])
+    PlotlyJS.plot([one,two,three,four,five,six,ten])
 end
 plotonlyconic_short()
 
@@ -235,21 +249,29 @@ plotonlyconic_short()
 
 function plotall_short()
     crashdate = df_list[1]."Date"[y2k_pos+k:end]
-    one =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,1], mode="lines",name = "Conic γ=0.1")
-    two =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,2], mode="lines",name = "Conic γ=3.275")
-    three = PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,3], mode="lines",name = "Conic γ=6.45")
-    four =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,4], mode="lines",name = "Conic γ=9.625")
-    five =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,5], mode="lines",name = "Conic γ=12.8")
-    six =   PlotlyJS.scatter(;x=crashdate, y=indexMPT_short, mode="lines",name = "Mean-Variance")
-    seven = PlotlyJS.scatter(;x=crashdate, y=indexvar_short, mode="lines",name = "Mean-VaR")
-    eight = PlotlyJS.scatter(;x=crashdate, y=indexcvar95_short, mode="lines",name = "Mean-CVaR 95%")
-    nine = PlotlyJS.scatter(;x=crashdate, y=indexcvar99_short, mode="lines",name = "Mean-CVaR 99%")
-    ten = PlotlyJS.scatter(;x=crashdate, y=DJI_val[y2k_pos+k:end], mode="lines",name = "DJIA")
-    PlotlyJS.plot([one,two,three,four,five,six,seven,eight,nine,ten])
+    one =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,1], mode="lines",name = "Conic γ=$(a[1])")
+    two =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,2], mode="lines",name = "Conic γ=$(a[2])")
+    three = PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,3], mode="lines",name = "Conic γ=$(a[3])")
+    four =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,4], mode="lines",name = "Conic γ=$(a[4])")
+    five =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,5], mode="lines",name = "Conic γ=$(a[5])")
+    six =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_short[:,5], mode="lines",name = "Conic γ=$(a[6])")
+    seven =   PlotlyJS.scatter(;x=crashdate, y=indexMPT_short, mode="lines",name = "Mean-Variance")
+    eight = PlotlyJS.scatter(;x=crashdate, y=indexvar_short, mode="lines",name = "Mean-VaR")
+    nine = PlotlyJS.scatter(;x=crashdate, y=indexcvar95_short, mode="lines",name = "Mean-CVaR 95%")
+    ten = PlotlyJS.scatter(;x=crashdate, y=indexcvar99_short, mode="lines",name = "Mean-CVaR 99%")
+    eleven = PlotlyJS.scatter(;x=crashdate, y=DJI_val[y2k_pos+k:end], mode="lines",name = "DJIA",opacity=0.25)
+    p = PlotlyJS.plot([one,two,three,four,five,six,seven,eight,nine,ten,eleven])
+    if k == -365
+        PlotlyJS.savefig(p, "plots/2020 crash/2020all-365_short.html")
+    elseif k == -30
+        PlotlyJS.savefig(p, "plots/2020 crash/2020all-30_short.html")
+    else
+        PlotlyJS.savefig(p, "plots/2020 crash/2020all_short.html")
+    end
 end
 plotall_short()
 
-using PlotlyJS
+a=vec(a)
 yaxis = ["VaR 95%";"MPT";"γ=" .* string.(a);"CVaR 95%";"CVaR 99%"]
 datamatrix = hcat(w_optimvar,w_optimMPT,five_γ...,w_optimcvar95,w_optimcvar99)'
 PlotlyJS.plot(PlotlyJS.heatmap(y=yaxis,x=uniqueNames,z = datamatrix,title="Weights Long-Only"))

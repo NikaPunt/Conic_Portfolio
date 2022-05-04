@@ -118,7 +118,7 @@ five_γ_short = Vector{Vector{Float64}}(undef,6)
 #     id = Threads.threadid()
 #     println("Thread $id on iteration $i")
 #     nummer = a[i] 
-#     five_γ[i] = getMinConicWeights(Rtrns,a[i],false)
+    # five_γ[i] = getMinConicWeights(Rtrns,a[i],false)
 #     open("data/w_optimgap$nummer-2000.txt", "w") do file
 #         writedlm(file, (five_γ[i]))
 #     end 
@@ -135,7 +135,7 @@ end
 
 beginning = [1]
 
-k = 1
+k = -365
 allRtrns = hcat(sampleRtrns,sampleCrashRtrns);
 
 begin
@@ -168,7 +168,19 @@ begin
         indexChangegap = indexChangefive_γ_short[i]
         indexfive_γ_short[2:end,i] = [prod(indexChangegap[1:i]) for i = 1:length(indexChangeMPT)]
     end
-    indexfive_γ_short = DJI_val[y2k_pos+k] .*indexfive_γ_short
+    indexfive_γ_short = DJI_val[y2k_pos+k] .*indexfive_γ_short;
+end
+
+h = 7
+begin
+    indexMPT_change = (-indexMPT[1:end-h]+indexMPT[h+1:end])./indexMPT[1:end-h]
+    indexvar_change = (-indexvar[1:end-h]+indexvar[h+1:end])./indexvar[1:end-h]
+    indexcvar95_change = (-indexcvar95[1:end-h]+indexcvar95[h+1:end])./indexcvar95[1:end-h]
+    indexcvar99_change = (-indexcvar99[1:end-h]+indexcvar99[h+1:end])./indexcvar99[1:end-h]
+    indexfive_γ_change = zeros(size(indexfive_γ,1)-h,size(indexfive_γ,2))
+    for i = 1:6
+        indexfive_γ_change[:,i] = (-indexfive_γ[1:end-h,i]+indexfive_γ[h+1:end,i])./indexfive_γ[1:end-h,i]
+    end
 end
 
 using PlotlyJS
@@ -219,6 +231,30 @@ function plotall()
     end
 end
 plotall()
+
+function plotall_change()
+    crashdate = df_list[1]."Date"[y2k_pos+k:end-h]
+    one =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_change[:,1], mode="lines",name = "Conic γ=$(a[1])")
+    two =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_change[:,2], mode="lines",name = "Conic γ=$(a[2])")
+    three = PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_change[:,3], mode="lines",name = "Conic γ=$(a[3])")
+    four =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_change[:,4], mode="lines",name = "Conic γ=$(a[4])")
+    five =  PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_change[:,5], mode="lines",name = "Conic γ=$(a[5])")
+    six =   PlotlyJS.scatter(;x=crashdate, y=indexfive_γ_change[:,5], mode="lines",name = "Conic γ=$(a[6])")
+    seven =   PlotlyJS.scatter(;x=crashdate, y=indexMPT_change, mode="lines",name = "Mean-Variance")
+    eight = PlotlyJS.scatter(;x=crashdate, y=indexvar_change, mode="lines",name = "Mean-VaR")
+    nine = PlotlyJS.scatter(;x=crashdate, y=indexcvar95_change, mode="lines",name = "Mean-CVaR 95%")
+    ten = PlotlyJS.scatter(;x=crashdate, y=indexcvar99_change, mode="lines",name = "Mean-CVaR 99%")
+    # eleven = PlotlyJS.scatter(;x=crashdate, y=DJI_val[y2k_pos+k:end], mode="lines",name = "DJIA",opacity=0.25)
+    p = PlotlyJS.plot([one,two,three,four,five,six,seven,eight,nine,ten])
+    if k == -365
+        PlotlyJS.savefig(p, "plots/2000 crash/2000all-365_change.html")
+    elseif k == -30
+        PlotlyJS.savefig(p, "plots/2000 crash/2000all-30_change.html")
+    else
+        PlotlyJS.savefig(p, "plots/2000 crash/2000all_change.html")
+    end
+end
+plotall_change()
 
 
 function plotonlyconic_short()
