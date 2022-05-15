@@ -1,0 +1,1297 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   class="main-svg"
+   width="674"
+   height="469"
+   style=""
+   version="1.1"
+   id="svg1914"
+   sodipodi:docname="all_on_minvarfrontier.svg"
+   inkscape:export-filename="C:\Users\nikap\Desktop\Conic_Portfolio\plots\all_on_minvarfrontier.png"
+   inkscape:export-xdpi="650.07001"
+   inkscape:export-ydpi="650.07001"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1916"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="1.7633262"
+     inkscape:cx="337.14692"
+     inkscape:cy="234.5"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1914" />
+  <rect
+     x="0"
+     y="0"
+     width="674"
+     height="469"
+     style="fill: rgb(255, 255, 255); fill-opacity: 1;"
+     id="rect1371" />
+  <defs
+     id="defs-785c22">
+    <g
+       class="clips"
+       id="g1385">
+      <clipPath
+         id="clip785c22xyplot"
+         class="plotclip">
+        <rect
+           width="373"
+           height="356"
+           id="rect1373" />
+      </clipPath>
+      <clipPath
+         class="axesclip"
+         id="clip785c22x">
+        <rect
+           x="73"
+           y="0"
+           width="373"
+           height="469"
+           id="rect1376" />
+      </clipPath>
+      <clipPath
+         class="axesclip"
+         id="clip785c22y">
+        <rect
+           x="0"
+           y="60"
+           width="674"
+           height="356"
+           id="rect1379" />
+      </clipPath>
+      <clipPath
+         class="axesclip"
+         id="clip785c22xy">
+        <rect
+           x="73"
+           y="60"
+           width="373"
+           height="356"
+           id="rect1382" />
+      </clipPath>
+    </g>
+    <g
+       class="gradients"
+       id="g1387" />
+    <g
+       class="patterns"
+       id="g1389" />
+  </defs>
+  <g
+     class="bglayer"
+     id="g1394">
+    <rect
+       class="bg"
+       x="73"
+       y="60"
+       width="373"
+       height="356"
+       style="fill: rgb(229, 236, 246); fill-opacity: 1; stroke-width: 0;"
+       id="rect1392" />
+  </g>
+  <g
+     class="layer-below"
+     id="g1400">
+    <g
+       class="imagelayer"
+       id="g1396" />
+    <g
+       class="shapelayer"
+       id="g1398" />
+  </g>
+  <g
+     class="cartesianlayer"
+     id="g1660">
+    <g
+       class="subplot xy"
+       id="g1658">
+      <g
+         class="layer-subplot"
+         id="g1406">
+        <g
+           class="shapelayer"
+           id="g1402" />
+        <g
+           class="imagelayer"
+           id="g1404" />
+      </g>
+      <g
+         class="gridlayer"
+         id="g1430">
+        <g
+           class="x"
+           id="g1414">
+          <path
+             class="xgrid crisp"
+             transform="translate(152.65,0)"
+             d="M0,60v356"
+             style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 1px;"
+             id="path1408" />
+          <path
+             class="xgrid crisp"
+             transform="translate(283.06,0)"
+             d="M0,60v356"
+             style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 1px;"
+             id="path1410" />
+          <path
+             class="xgrid crisp"
+             transform="translate(413.47,0)"
+             d="M0,60v356"
+             style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 1px;"
+             id="path1412" />
+        </g>
+        <g
+           class="y"
+           id="g1428">
+          <path
+             class="ygrid crisp"
+             transform="translate(0,396.27)"
+             d="M73,0h373"
+             style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 1px;"
+             id="path1416" />
+          <path
+             class="ygrid crisp"
+             transform="translate(0,338.23)"
+             d="M73,0h373"
+             style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 1px;"
+             id="path1418" />
+          <path
+             class="ygrid crisp"
+             transform="translate(0,280.19)"
+             d="M73,0h373"
+             style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 1px;"
+             id="path1420" />
+          <path
+             class="ygrid crisp"
+             transform="translate(0,222.16)"
+             d="M73,0h373"
+             style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 1px;"
+             id="path1422" />
+          <path
+             class="ygrid crisp"
+             transform="translate(0,164.12)"
+             d="M73,0h373"
+             style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 1px;"
+             id="path1424" />
+          <path
+             class="ygrid crisp"
+             transform="translate(0,106.09)"
+             d="M73,0h373"
+             style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 1px;"
+             id="path1426" />
+        </g>
+      </g>
+      <g
+         class="zerolinelayer"
+         id="g1432" />
+      <path
+         class="xlines-below"
+         id="path1434" />
+      <path
+         class="ylines-below"
+         id="path1436" />
+      <g
+         class="overlines-below"
+         id="g1438" />
+      <g
+         class="xaxislayer-below"
+         id="g1440" />
+      <g
+         class="yaxislayer-below"
+         id="g1442" />
+      <g
+         class="overaxes-below"
+         id="g1444" />
+      <g
+         class="plot"
+         transform="translate(73,60)"
+         clip-path="url(#clip785c22xyplot)"
+         id="g1606">
+        <g
+           class="scatterlayer mlayer"
+           id="g1604">
+          <g
+             class="trace scatter tracee39d90"
+             style="stroke-miterlimit: 2; opacity: 1;"
+             id="g1458">
+            <g
+               class="fills"
+               id="g1446" />
+            <g
+               class="errorbars"
+               id="g1448" />
+            <g
+               class="lines"
+               id="g1452">
+              <path
+                 class="js-line"
+                 d="M7833,1126.25L7833,808.6638666843398L3520.05,635.48L3212.31,617.3L1474.14,490.07L1284.14,471.89L801.6,417.36L669.92,399.19L449.15,362.83L357.08,344.66L276.02,326.48L206.45,308.3L149.07,290.13L102.99,271.95L67.23,253.77L39.94,235.6L19.88,217.42L7.38,199.24L2.34,181.07L4.43,162.89L12.62,144.71L27.15,126.54L48.62,108.36L78.05,90.18L117.72,72.01L172.19,53.83L242.19,35.65L327.7,17.48L545.58,-18.87L681.42,-37.05L1689.42,-127.93L1973.43,-146.11L7833.000000000001,-341.26931993798013L7833,-673.23"
+                 style="vector-effect: non-scaling-stroke; fill: none; stroke: rgb(99, 110, 250); stroke-opacity: 1; stroke-width: 2px; opacity: 1;"
+                 id="path1450" />
+            </g>
+            <g
+               class="points"
+               id="g1454" />
+            <g
+               class="text"
+               id="g1456" />
+          </g>
+          <g
+             class="trace scatter trace91b12c"
+             style="stroke-miterlimit: 2; opacity: 1;"
+             id="g1476">
+            <g
+               class="fills"
+               id="g1460" />
+            <g
+               class="errorbars"
+               id="g1462" />
+            <g
+               class="lines"
+               id="g1464" />
+            <g
+               class="points"
+               id="g1468">
+              <path
+                 class="point"
+                 transform="translate(2.2,177.12)"
+                 d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                 style="opacity: 1; stroke-width: 0px; fill: rgb(239, 85, 59); fill-opacity: 1;"
+                 id="path1466" />
+            </g>
+            <g
+               class="text"
+               id="g1474">
+              <g
+                 class="textpoint"
+                 transform="translate(4.75,3)"
+                 id="g1472">
+                <text
+                   x="2.2"
+                   y="177.12"
+                   text-anchor="start"
+                   style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre;"
+                   id="text1470">MinVar</text>
+              </g>
+            </g>
+          </g>
+          <g
+             class="trace scatter trace15c167"
+             style="stroke-miterlimit: 2; opacity: 1;"
+             id="g1490">
+            <g
+               class="fills"
+               id="g1478" />
+            <g
+               class="errorbars"
+               id="g1480" />
+            <g
+               class="lines"
+               id="g1482" />
+            <g
+               class="points"
+               id="g1486">
+              <path
+                 class="point"
+                 transform="translate(79.51,231.91)"
+                 d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                 style="opacity: 1; stroke-width: 0px; fill: rgb(0, 204, 150); fill-opacity: 1;"
+                 id="path1484" />
+            </g>
+            <g
+               class="text"
+               id="g1488" />
+          </g>
+          <g
+             class="trace scatter tracefdfbdc"
+             style="stroke-miterlimit: 2; opacity: 1;"
+             id="g1504">
+            <g
+               class="fills"
+               id="g1492" />
+            <g
+               class="errorbars"
+               id="g1494" />
+            <g
+               class="lines"
+               id="g1496" />
+            <g
+               class="points"
+               id="g1500">
+              <path
+                 class="point"
+                 transform="translate(80.89,229.01)"
+                 d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                 style="opacity: 1; stroke-width: 0px; fill: rgb(171, 99, 250); fill-opacity: 1;"
+                 id="path1498" />
+            </g>
+            <g
+               class="text"
+               id="g1502" />
+          </g>
+          <g
+             class="trace scatter traceaa3792"
+             style="stroke-miterlimit: 2; opacity: 1;"
+             id="g1518">
+            <g
+               class="fills"
+               id="g1506" />
+            <g
+               class="errorbars"
+               id="g1508" />
+            <g
+               class="lines"
+               id="g1510" />
+            <g
+               class="points"
+               id="g1514">
+              <path
+                 class="point"
+                 transform="translate(114.25,201.67)"
+                 d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                 style="opacity: 1; stroke-width: 0px; fill: rgb(255, 161, 90); fill-opacity: 1;"
+                 id="path1512" />
+            </g>
+            <g
+               class="text"
+               id="g1516" />
+          </g>
+          <g
+             class="trace scatter trace104761"
+             style="stroke-miterlimit: 2; opacity: 1;"
+             id="g1532">
+            <g
+               class="fills"
+               id="g1520" />
+            <g
+               class="errorbars"
+               id="g1522" />
+            <g
+               class="lines"
+               id="g1524" />
+            <g
+               class="points"
+               id="g1528">
+              <path
+                 class="point"
+                 transform="translate(87.91,219.34)"
+                 d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                 style="opacity: 1; stroke-width: 0px; fill: rgb(25, 211, 243); fill-opacity: 1;"
+                 id="path1526" />
+            </g>
+            <g
+               class="text"
+               id="g1530" />
+          </g>
+          <g
+             class="trace scatter tracef5e848"
+             style="stroke-miterlimit: 2; opacity: 1;"
+             id="g1546">
+            <g
+               class="fills"
+               id="g1534" />
+            <g
+               class="errorbars"
+               id="g1536" />
+            <g
+               class="lines"
+               id="g1538" />
+            <g
+               class="points"
+               id="g1542">
+              <path
+                 class="point"
+                 transform="translate(72.93,227.53)"
+                 d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                 style="opacity: 1; stroke-width: 0px; fill: rgb(255, 102, 146); fill-opacity: 1;"
+                 id="path1540" />
+            </g>
+            <g
+               class="text"
+               id="g1544" />
+          </g>
+          <g
+             class="trace scatter trace737f73"
+             style="stroke-miterlimit: 2; opacity: 1;"
+             id="g1560">
+            <g
+               class="fills"
+               id="g1548" />
+            <g
+               class="errorbars"
+               id="g1550" />
+            <g
+               class="lines"
+               id="g1552" />
+            <g
+               class="points"
+               id="g1556">
+              <path
+                 class="point"
+                 transform="translate(71.09,226.94)"
+                 d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                 style="opacity: 1; stroke-width: 0px; fill: rgb(182, 232, 128); fill-opacity: 1;"
+                 id="path1554" />
+            </g>
+            <g
+               class="text"
+               id="g1558" />
+          </g>
+          <g
+             class="trace scatter trace3763f6"
+             style="stroke-miterlimit: 2; opacity: 1;"
+             id="g1574">
+            <g
+               class="fills"
+               id="g1562" />
+            <g
+               class="errorbars"
+               id="g1564" />
+            <g
+               class="lines"
+               id="g1566" />
+            <g
+               class="points"
+               id="g1570">
+              <path
+                 class="point"
+                 transform="translate(73.32,226.11)"
+                 d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                 style="opacity: 1; stroke-width: 0px; fill: rgb(255, 151, 255); fill-opacity: 1;"
+                 id="path1568" />
+            </g>
+            <g
+               class="text"
+               id="g1572" />
+          </g>
+          <g
+             class="trace scatter traced902f6"
+             style="stroke-miterlimit: 2; opacity: 1;"
+             id="g1588">
+            <g
+               class="fills"
+               id="g1576" />
+            <g
+               class="errorbars"
+               id="g1578" />
+            <g
+               class="lines"
+               id="g1580" />
+            <g
+               class="points"
+               id="g1584">
+              <path
+                 class="point"
+                 transform="translate(155.71,214.31)"
+                 d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                 style="opacity: 1; stroke-width: 0px; fill: rgb(254, 203, 82); fill-opacity: 1;"
+                 id="path1582" />
+            </g>
+            <g
+               class="text"
+               id="g1586" />
+          </g>
+          <g
+             class="trace scatter tracec32952"
+             style="stroke-miterlimit: 2; opacity: 1;"
+             id="g1602">
+            <g
+               class="fills"
+               id="g1590" />
+            <g
+               class="errorbars"
+               id="g1592" />
+            <g
+               class="lines"
+               id="g1594" />
+            <g
+               class="points"
+               id="g1598">
+              <path
+                 class="point"
+                 transform="translate(368.88,178.75)"
+                 d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                 style="opacity: 1; stroke-width: 0px; fill: rgb(99, 110, 250); fill-opacity: 1;"
+                 id="path1596" />
+            </g>
+            <g
+               class="text"
+               id="g1600" />
+          </g>
+        </g>
+      </g>
+      <g
+         class="overplot"
+         id="g1608" />
+      <path
+         class="xlines-above crisp"
+         d="M0,0"
+         style="fill: none;"
+         id="path1610" />
+      <path
+         class="ylines-above crisp"
+         d="M0,0"
+         style="fill: none;"
+         id="path1612" />
+      <g
+         class="overlines-above"
+         id="g1614" />
+      <g
+         class="xaxislayer-above"
+         id="g1628">
+        <g
+           class="xtick"
+           id="g1618">
+          <text
+             text-anchor="middle"
+             x="0"
+             y="429"
+             transform="translate(152.65,0)"
+             style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre; opacity: 1;"
+             id="text1616">0.0013</text>
+        </g>
+        <g
+           class="xtick"
+           id="g1622">
+          <text
+             text-anchor="middle"
+             x="0"
+             y="429"
+             style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre; opacity: 1;"
+             transform="translate(283.06,0)"
+             id="text1620">0.00132</text>
+        </g>
+        <g
+           class="xtick"
+           id="g1626">
+          <text
+             text-anchor="middle"
+             x="0"
+             y="429"
+             style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre; opacity: 1;"
+             transform="translate(413.47,0)"
+             id="text1624">0.00134</text>
+        </g>
+      </g>
+      <g
+         class="yaxislayer-above"
+         id="g1654">
+        <g
+           class="ytick"
+           id="g1632">
+          <text
+             text-anchor="end"
+             x="72"
+             y="4.199999999999999"
+             transform="translate(0,396.27)"
+             style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre; opacity: 1;"
+             id="text1630">0.01</text>
+        </g>
+        <g
+           class="ytick"
+           id="g1636">
+          <text
+             text-anchor="end"
+             x="72"
+             y="4.199999999999999"
+             style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre; opacity: 1;"
+             transform="translate(0,338.23)"
+             id="text1634">0.012</text>
+        </g>
+        <g
+           class="ytick"
+           id="g1640">
+          <text
+             text-anchor="end"
+             x="72"
+             y="4.199999999999999"
+             style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre; opacity: 1;"
+             transform="translate(0,280.19)"
+             id="text1638">0.014</text>
+        </g>
+        <g
+           class="ytick"
+           id="g1644">
+          <text
+             text-anchor="end"
+             x="72"
+             y="4.199999999999999"
+             style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre; opacity: 1;"
+             transform="translate(0,222.16)"
+             id="text1642">0.016</text>
+        </g>
+        <g
+           class="ytick"
+           id="g1648">
+          <text
+             text-anchor="end"
+             x="72"
+             y="4.199999999999999"
+             style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre; opacity: 1;"
+             transform="translate(0,164.12)"
+             id="text1646">0.018</text>
+        </g>
+        <g
+           class="ytick"
+           id="g1652">
+          <text
+             text-anchor="end"
+             x="72"
+             y="4.199999999999999"
+             style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre; opacity: 1;"
+             transform="translate(0,106.09)"
+             id="text1650">0.02</text>
+        </g>
+      </g>
+      <g
+         class="overaxes-above"
+         id="g1656" />
+    </g>
+  </g>
+  <g
+     class="polarlayer"
+     id="g1662" />
+  <g
+     class="ternarylayer"
+     id="g1664" />
+  <g
+     class="geolayer"
+     id="g1666" />
+  <g
+     class="funnelarealayer"
+     id="g1668" />
+  <g
+     class="pielayer"
+     id="g1670" />
+  <g
+     class="iciclelayer"
+     id="g1672" />
+  <g
+     class="treemaplayer"
+     id="g1674" />
+  <g
+     class="sunburstlayer"
+     id="g1676" />
+  <g
+     class="glimages"
+     id="g1678" />
+  <defs
+     id="topdefs-785c22">
+    <g
+       class="clips"
+       id="g1680" />
+    <clipPath
+       id="legend785c22">
+      <rect
+         width="209"
+         height="219"
+         x="0"
+         y="0"
+         id="rect1682" />
+    </clipPath>
+  </defs>
+  <g
+     class="layer-above"
+     id="g1690">
+    <g
+       class="imagelayer"
+       id="g1686" />
+    <g
+       class="shapelayer"
+       id="g1688" />
+  </g>
+  <g
+     class="infolayer"
+     id="g1912">
+    <g
+       class="legend"
+       pointer-events="all"
+       transform="translate(453.46,60)"
+       id="g1898">
+      <rect
+         class="bg"
+         shape-rendering="crispEdges"
+         width="209"
+         height="219"
+         x="0"
+         y="0"
+         style="stroke: rgb(68, 68, 68); stroke-opacity: 1; fill: rgb(255, 255, 255); fill-opacity: 1; stroke-width: 0px;"
+         id="rect1692" />
+      <g
+         class="scrollbox"
+         transform=""
+         clip-path="url(#legend785c22)"
+         id="g1894">
+        <g
+           class="groups"
+           id="g1892">
+          <g
+             class="traces"
+             transform="translate(0,14.5)"
+             style="opacity: 1;"
+             id="g1710">
+            <text
+               class="legendtext"
+               text-anchor="start"
+               x="40"
+               y="4.680000000000001"
+               style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre;"
+               id="text1694">Minimum Variance Frontier</text>
+            <g
+               class="layers"
+               style="opacity: 1;"
+               id="g1706">
+              <g
+                 class="legendfill"
+                 id="g1696" />
+              <g
+                 class="legendlines"
+                 id="g1700">
+                <path
+                   class="js-line"
+                   d="M5,0h30"
+                   style="fill: none; stroke: rgb(99, 110, 250); stroke-opacity: 1; stroke-width: 2px;"
+                   id="path1698" />
+              </g>
+              <g
+                 class="legendsymbols"
+                 id="g1704">
+                <g
+                   class="legendpoints"
+                   id="g1702" />
+              </g>
+            </g>
+            <rect
+               class="legendtoggle"
+               x="0"
+               y="-9.5"
+               width="203.171875"
+               height="19"
+               style="fill: rgb(0, 0, 0); fill-opacity: 0;"
+               id="rect1708" />
+          </g>
+          <g
+             class="traces"
+             transform="translate(0,33.5)"
+             style="opacity: 1;"
+             id="g1728">
+            <text
+               class="legendtext"
+               text-anchor="start"
+               x="40"
+               y="4.680000000000001"
+               style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre;"
+               id="text1712">MinVar</text>
+            <g
+               class="layers"
+               style="opacity: 1;"
+               id="g1724">
+              <g
+                 class="legendfill"
+                 id="g1714" />
+              <g
+                 class="legendlines"
+                 id="g1716" />
+              <g
+                 class="legendsymbols"
+                 id="g1722">
+                <g
+                   class="legendpoints"
+                   id="g1720">
+                  <path
+                     class="scatterpts"
+                     transform="translate(20,0)"
+                     d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                     style="opacity: 1; stroke-width: 0px; fill: rgb(239, 85, 59); fill-opacity: 1;"
+                     id="path1718" />
+                </g>
+              </g>
+            </g>
+            <rect
+               class="legendtoggle"
+               x="0"
+               y="-9.5"
+               width="203.171875"
+               height="19"
+               style="fill: rgb(0, 0, 0); fill-opacity: 0;"
+               id="rect1726" />
+          </g>
+          <g
+             class="traces"
+             transform="translate(0,52.5)"
+             style="opacity: 1;"
+             id="g1746">
+            <text
+               class="legendtext"
+               text-anchor="start"
+               x="40"
+               y="4.680000000000001"
+               style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre;"
+               id="text1730">VaR95</text>
+            <g
+               class="layers"
+               style="opacity: 1;"
+               id="g1742">
+              <g
+                 class="legendfill"
+                 id="g1732" />
+              <g
+                 class="legendlines"
+                 id="g1734" />
+              <g
+                 class="legendsymbols"
+                 id="g1740">
+                <g
+                   class="legendpoints"
+                   id="g1738">
+                  <path
+                     class="scatterpts"
+                     transform="translate(20,0)"
+                     d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                     style="opacity: 1; stroke-width: 0px; fill: rgb(0, 204, 150); fill-opacity: 1;"
+                     id="path1736" />
+                </g>
+              </g>
+            </g>
+            <rect
+               class="legendtoggle"
+               x="0"
+               y="-9.5"
+               width="203.171875"
+               height="19"
+               style="fill: rgb(0, 0, 0); fill-opacity: 0;"
+               id="rect1744" />
+          </g>
+          <g
+             class="traces"
+             transform="translate(0,71.5)"
+             style="opacity: 1;"
+             id="g1764">
+            <text
+               class="legendtext"
+               text-anchor="start"
+               x="40"
+               y="4.680000000000001"
+               style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre;"
+               id="text1748">CVaR95</text>
+            <g
+               class="layers"
+               style="opacity: 1;"
+               id="g1760">
+              <g
+                 class="legendfill"
+                 id="g1750" />
+              <g
+                 class="legendlines"
+                 id="g1752" />
+              <g
+                 class="legendsymbols"
+                 id="g1758">
+                <g
+                   class="legendpoints"
+                   id="g1756">
+                  <path
+                     class="scatterpts"
+                     transform="translate(20,0)"
+                     d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                     style="opacity: 1; stroke-width: 0px; fill: rgb(171, 99, 250); fill-opacity: 1;"
+                     id="path1754" />
+                </g>
+              </g>
+            </g>
+            <rect
+               class="legendtoggle"
+               x="0"
+               y="-9.5"
+               width="203.171875"
+               height="19"
+               style="fill: rgb(0, 0, 0); fill-opacity: 0;"
+               id="rect1762" />
+          </g>
+          <g
+             class="traces"
+             transform="translate(0,90.5)"
+             style="opacity: 1;"
+             id="g1782">
+            <text
+               class="legendtext"
+               text-anchor="start"
+               x="40"
+               y="4.680000000000001"
+               style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre;"
+               id="text1766">CVaR99</text>
+            <g
+               class="layers"
+               style="opacity: 1;"
+               id="g1778">
+              <g
+                 class="legendfill"
+                 id="g1768" />
+              <g
+                 class="legendlines"
+                 id="g1770" />
+              <g
+                 class="legendsymbols"
+                 id="g1776">
+                <g
+                   class="legendpoints"
+                   id="g1774">
+                  <path
+                     class="scatterpts"
+                     transform="translate(20,0)"
+                     d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                     style="opacity: 1; stroke-width: 0px; fill: rgb(255, 161, 90); fill-opacity: 1;"
+                     id="path1772" />
+                </g>
+              </g>
+            </g>
+            <rect
+               class="legendtoggle"
+               x="0"
+               y="-9.5"
+               width="203.171875"
+               height="19"
+               style="fill: rgb(0, 0, 0); fill-opacity: 0;"
+               id="rect1780" />
+          </g>
+          <g
+             class="traces"
+             transform="translate(0,109.5)"
+             style="opacity: 1;"
+             id="g1800">
+            <text
+               class="legendtext"
+               text-anchor="start"
+               x="40"
+               y="4.680000000000001"
+               style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre;"
+               id="text1784">Conic γ=0.001</text>
+            <g
+               class="layers"
+               style="opacity: 1;"
+               id="g1796">
+              <g
+                 class="legendfill"
+                 id="g1786" />
+              <g
+                 class="legendlines"
+                 id="g1788" />
+              <g
+                 class="legendsymbols"
+                 id="g1794">
+                <g
+                   class="legendpoints"
+                   id="g1792">
+                  <path
+                     class="scatterpts"
+                     transform="translate(20,0)"
+                     d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                     style="opacity: 1; stroke-width: 0px; fill: rgb(25, 211, 243); fill-opacity: 1;"
+                     id="path1790" />
+                </g>
+              </g>
+            </g>
+            <rect
+               class="legendtoggle"
+               x="0"
+               y="-9.5"
+               width="203.171875"
+               height="19"
+               style="fill: rgb(0, 0, 0); fill-opacity: 0;"
+               id="rect1798" />
+          </g>
+          <g
+             class="traces"
+             transform="translate(0,128.5)"
+             style="opacity: 1;"
+             id="g1818">
+            <text
+               class="legendtext"
+               text-anchor="start"
+               x="40"
+               y="4.680000000000001"
+               style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre;"
+               id="text1802">Conic γ=0.14</text>
+            <g
+               class="layers"
+               style="opacity: 1;"
+               id="g1814">
+              <g
+                 class="legendfill"
+                 id="g1804" />
+              <g
+                 class="legendlines"
+                 id="g1806" />
+              <g
+                 class="legendsymbols"
+                 id="g1812">
+                <g
+                   class="legendpoints"
+                   id="g1810">
+                  <path
+                     class="scatterpts"
+                     transform="translate(20,0)"
+                     d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                     style="opacity: 1; stroke-width: 0px; fill: rgb(255, 102, 146); fill-opacity: 1;"
+                     id="path1808" />
+                </g>
+              </g>
+            </g>
+            <rect
+               class="legendtoggle"
+               x="0"
+               y="-9.5"
+               width="203.171875"
+               height="19"
+               style="fill: rgb(0, 0, 0); fill-opacity: 0;"
+               id="rect1816" />
+          </g>
+          <g
+             class="traces"
+             transform="translate(0,147.5)"
+             style="opacity: 1;"
+             id="g1836">
+            <text
+               class="legendtext"
+               text-anchor="start"
+               x="40"
+               y="4.680000000000001"
+               style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre;"
+               id="text1820">Conic γ=0.4</text>
+            <g
+               class="layers"
+               style="opacity: 1;"
+               id="g1832">
+              <g
+                 class="legendfill"
+                 id="g1822" />
+              <g
+                 class="legendlines"
+                 id="g1824" />
+              <g
+                 class="legendsymbols"
+                 id="g1830">
+                <g
+                   class="legendpoints"
+                   id="g1828">
+                  <path
+                     class="scatterpts"
+                     transform="translate(20,0)"
+                     d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                     style="opacity: 1; stroke-width: 0px; fill: rgb(182, 232, 128); fill-opacity: 1;"
+                     id="path1826" />
+                </g>
+              </g>
+            </g>
+            <rect
+               class="legendtoggle"
+               x="0"
+               y="-9.5"
+               width="203.171875"
+               height="19"
+               style="fill: rgb(0, 0, 0); fill-opacity: 0;"
+               id="rect1834" />
+          </g>
+          <g
+             class="traces"
+             transform="translate(0,166.5)"
+             style="opacity: 1;"
+             id="g1854">
+            <text
+               class="legendtext"
+               text-anchor="start"
+               x="40"
+               y="4.680000000000001"
+               style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre;"
+               id="text1838">Conic γ=1.0</text>
+            <g
+               class="layers"
+               style="opacity: 1;"
+               id="g1850">
+              <g
+                 class="legendfill"
+                 id="g1840" />
+              <g
+                 class="legendlines"
+                 id="g1842" />
+              <g
+                 class="legendsymbols"
+                 id="g1848">
+                <g
+                   class="legendpoints"
+                   id="g1846">
+                  <path
+                     class="scatterpts"
+                     transform="translate(20,0)"
+                     d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                     style="opacity: 1; stroke-width: 0px; fill: rgb(255, 151, 255); fill-opacity: 1;"
+                     id="path1844" />
+                </g>
+              </g>
+            </g>
+            <rect
+               class="legendtoggle"
+               x="0"
+               y="-9.5"
+               width="203.171875"
+               height="19"
+               style="fill: rgb(0, 0, 0); fill-opacity: 0;"
+               id="rect1852" />
+          </g>
+          <g
+             class="traces"
+             transform="translate(0,185.5)"
+             style="opacity: 1;"
+             id="g1872">
+            <text
+               class="legendtext"
+               text-anchor="start"
+               x="40"
+               y="4.680000000000001"
+               style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre;"
+               id="text1856">Conic γ=2.6</text>
+            <g
+               class="layers"
+               style="opacity: 1;"
+               id="g1868">
+              <g
+                 class="legendfill"
+                 id="g1858" />
+              <g
+                 class="legendlines"
+                 id="g1860" />
+              <g
+                 class="legendsymbols"
+                 id="g1866">
+                <g
+                   class="legendpoints"
+                   id="g1864">
+                  <path
+                     class="scatterpts"
+                     transform="translate(20,0)"
+                     d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                     style="opacity: 1; stroke-width: 0px; fill: rgb(254, 203, 82); fill-opacity: 1;"
+                     id="path1862" />
+                </g>
+              </g>
+            </g>
+            <rect
+               class="legendtoggle"
+               x="0"
+               y="-9.5"
+               width="203.171875"
+               height="19"
+               style="fill: rgb(0, 0, 0); fill-opacity: 0;"
+               id="rect1870" />
+          </g>
+          <g
+             class="traces"
+             transform="translate(0,204.5)"
+             style="opacity: 1;"
+             id="g1890">
+            <text
+               class="legendtext"
+               text-anchor="start"
+               x="40"
+               y="4.680000000000001"
+               style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 12px; fill: rgb(42, 63, 95); fill-opacity: 1; white-space: pre;"
+               id="text1874">Conic γ=7.0</text>
+            <g
+               class="layers"
+               style="opacity: 1;"
+               id="g1886">
+              <g
+                 class="legendfill"
+                 id="g1876" />
+              <g
+                 class="legendlines"
+                 id="g1878" />
+              <g
+                 class="legendsymbols"
+                 id="g1884">
+                <g
+                   class="legendpoints"
+                   id="g1882">
+                  <path
+                     class="scatterpts"
+                     transform="translate(20,0)"
+                     d="M3,0A3,3 0 1,1 0,-3A3,3 0 0,1 3,0Z"
+                     style="opacity: 1; stroke-width: 0px; fill: rgb(99, 110, 250); fill-opacity: 1;"
+                     id="path1880" />
+                </g>
+              </g>
+            </g>
+            <rect
+               class="legendtoggle"
+               x="0"
+               y="-9.5"
+               width="203.171875"
+               height="19"
+               style="fill: rgb(0, 0, 0); fill-opacity: 0;"
+               id="rect1888" />
+          </g>
+        </g>
+      </g>
+      <rect
+         class="scrollbar"
+         rx="20"
+         ry="3"
+         width="0"
+         height="0"
+         x="0"
+         y="0"
+         style="fill: rgb(128, 139, 164); fill-opacity: 1;"
+         id="rect1896" />
+    </g>
+    <g
+       class="g-gtitle"
+       id="g1902">
+      <text
+         class="gtitle"
+         x="33.7"
+         y="30"
+         text-anchor="start"
+         dy="0em"
+         style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(42, 63, 95); opacity: 1; font-weight: normal; white-space: pre;"
+         id="text1900">Minimum Variance Frontier</text>
+    </g>
+    <g
+       class="g-xtitle"
+       id="g1906">
+      <text
+         class="xtitle"
+         x="259.5"
+         y="456.8"
+         text-anchor="middle"
+         style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 14px; fill: rgb(42, 63, 95); opacity: 1; font-weight: normal; white-space: pre;"
+         id="text1904">Volatility (Dec.)</text>
+    </g>
+    <g
+       class="g-ytitle"
+       transform="translate(1.6904296875,0)"
+       id="g1910">
+      <text
+         class="ytitle"
+         transform="rotate(-90,12.309375000000003,238)"
+         x="12.309375000000003"
+         y="238"
+         text-anchor="middle"
+         style="font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 14px; fill: rgb(42, 63, 95); opacity: 1; font-weight: normal; white-space: pre;"
+         id="text1908">Yield per month</text>
+    </g>
+  </g>
+</svg>

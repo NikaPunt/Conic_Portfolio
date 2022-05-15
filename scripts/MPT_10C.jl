@@ -1,11 +1,11 @@
 include("HeaderFile.jl")
 
-struct Asset
-    name::String    
-    returns::Vector{Float64}
-    mean::Float64
-    vol::Float64
-end
+# struct Asset
+#     name::String    
+#     rtrns::Vector{Float64}
+#     mean::Float64
+#     vol::Float64
+# end
 
 println("Importing datasets")
 begin
@@ -52,13 +52,13 @@ end
 
 means(a::Vector{Asset}) = Vector{Float64}([ass.mean for ass in a])
 vols(a::Vector{Asset}) = Vector{Float64}([ass.vol for ass in a])
-returns(a::Vector{Asset}) = Vector{Vector{Float64}}([ass.returns for ass in a])
+rtrns(a::Vector{Asset}) = Vector{Vector{Float64}}([ass.rtrns for ass in a])
 
 #Make sure to run this at least once
 println("Calculating Optimal Mean-Variance Portfolio")
 begin
     μ = means(AssetArray);
-    Σ = 30.437*cov(hcat(returns(AssetArray)...));
+    Σ = 30.437*cov(hcat(rtrns(AssetArray)...));
     model = Model();
     set_optimizer(model, Ipopt.Optimizer)
     set_optimizer_attribute(model, "constr_viol_tol", 1e-15)
@@ -103,7 +103,7 @@ end
 println("Calculating Optimal Mean-Variance Long-Short Portfolio")
 begin
     μ = means(AssetArray);
-    Σ = 30.437*cov(hcat(returns(AssetArray)...));
+    Σ = 30.437*cov(hcat(rtrns(AssetArray)...));
     model = Model();
     set_optimizer(model, Ipopt.Optimizer)
     set_optimizer_attribute(model, "constr_viol_tol", 1e-15)

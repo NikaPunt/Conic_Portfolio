@@ -2,7 +2,7 @@
 
 include("HeaderFile.jl")
 println("Importing datasets")
-using Dates
+
 begin
     filenames = readdir("data/DJ2020")
     N = length(filenames)
@@ -114,20 +114,25 @@ w_optimcvar99_short = vec(readdlm("data/w_optimcvar99-2020_short.txt",Float64))
 # end
 
 a = vec([0.001 0.14 0.4 1.0 2.6 7.0])
+a_double = vec([0.001 0.14 0.4 1.0 2.6 7.0 0.001 0.14 0.4 1.0 2.6 7.0])
 five_γ = Vector{Vector{Float64}}(undef,6)
 five_γ_short = Vector{Vector{Float64}}(undef,6)
-Threads.@threads for i = 1:6
+all_γ = Vector{Vector{Float64}}(undef,12)
+Threads.@threads for i = 1:12
     id = Threads.threadid()
     println("Thread $id on iteration $i")
     nummer = a[i] 
-    five_γ[i] = getMinConicWeights(Rtrns,a[i],false)
-    open("data/w_optimgap$nummer-2020.txt", "w") do file
-        writedlm(file, (five_γ[i]))
-    end 
-    five_γ_short[i] = getMinConicWeights(Rtrns,a[i],true)
-    open("data/w_optimgap$nummer-2020_short.txt", "w") do file
-        writedlm(file, (A[i]))
-    end 
+    if i < 7
+        all_γ[i] = getMinConicWeights(Rtrns,a[i],false)
+        open("data/w_optimgap$nummer-2020.txt", "w") do file
+            writedlm(file, (five_γ[i]))
+        end 
+    else
+        all_γ[i] = getMinConicWeights(Rtrns,a[i],true)
+        open("data/w_optimgap$nummer-2020_short.txt", "w") do file
+            writedlm(file, (A[i]))
+        end 
+    end
 end
 # for i = 1:6
 #     nummer = a[i] 

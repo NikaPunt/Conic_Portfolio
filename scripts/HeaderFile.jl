@@ -12,9 +12,14 @@ using JuMP # language
 using AmplNLWriter # interface
 using Ipopt # solver
 using Clp
+using PlotlyJS
+using Dates
 # using GLPK
 using Base.Threads: @threads, @spawn
 using KNITRO
+
+# In case any of the packages fail to load because they weren't installed, do:
+# using Pkg; Pkg.add("<package name>")
 
 include("ICA_assets.jl")
 include("implied_moments.jl")
@@ -23,3 +28,4 @@ include("VG_Params2MRet.jl")
 include("ConicFunctions.jl")
 include("CPT_Optimization.jl")
 include("getWeights.jl")
+
