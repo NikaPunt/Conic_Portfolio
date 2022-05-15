@@ -112,3 +112,19 @@ for name in tickersDJIA2020:
     f.write(pd.DataFrame.to_csv(tickerInfo.history(start=startDate,end=endDate)))
     f.close()
 # %%
+
+df = pd.read_csv('/home/nikap/Desktop/Masterthesis/Conic_Portfolio/data/nasdaq_screener_1652438633290.csv')
+# %%
+tickersLarge = df["Symbol"].tolist()
+#%% Set start and end times 2020
+# startDate , as per our convenience we can modify
+startDate = datetime.datetime(2007, 1, 3)
+ 
+# endDate , as per our convenience we can modify
+endDate = datetime.datetime(2022, 1, 3)
+# %%
+for name in tickersLarge:
+    tickerInfo = yf.Ticker(name)
+    f = open("/home/nikap/Desktop/Masterthesis/Conic_Portfolio/data/StudyStocks/"+name+".csv", "a")
+    f.write(pd.DataFrame.to_csv(tickerInfo.history(start=startDate,end=endDate)))
+    f.close()
