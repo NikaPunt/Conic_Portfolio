@@ -38,7 +38,13 @@ function calcMinVar(returns::Matrix{Float64},α::Float64=0.95,verbose::Bool=true
     H₀ = 1:J
     Hᵢ₋₁ = [1] # Doesn't matter what this is just yet
     Hᵢ = H₀
-    ξ = 0.5
+    if size(returns,1) < 50
+        ξ = 0.5
+    elseif size(returns,1) < 75
+        ξ = 0.25
+    else
+        ξ = 0.1
+    end
     nrAssets = size(returns,1)
     weights = zeros(nrAssets)
     VaR = 0
@@ -57,7 +63,7 @@ function calcMinVar(returns::Matrix{Float64},α::Float64=0.95,verbose::Bool=true
         set_optimizer(model, Ipopt.Optimizer) # Memory runs out?!
         set_optimizer_attribute(model, "constr_viol_tol", 1e-15)
         set_optimizer_attribute(model, "acceptable_tol", 1e-15)
-        set_optimizer_attribute(model, "print_level", 5)
+        set_optimizer_attribute(model, "print_level", 0)
         # set_optimizer(model, GLPK.Optimizer)
         # set_optimizer_attribute(model, "tm_lim", 60 * 1_000)
         # set_optimizer_attribute(model, "msg_lev", GLPK.GLP_MSG_OFF)

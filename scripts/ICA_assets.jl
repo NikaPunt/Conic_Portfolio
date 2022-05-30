@@ -17,7 +17,7 @@ function ICA_assets(returns::Matrix{Float64})
     ica = IndependentComponentAnalysis.fit(ICA, returns, nrAssets, FastICA();
                 fun       = IndependentComponentAnalysis.Tanh(),
                 do_whiten = true,
-                maxiter   = 10000,
+                maxiter   = 1000000,
                 tol       = 1e-6,
                 mean      = 0,
                 winit     = nothing

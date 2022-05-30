@@ -121,16 +121,16 @@ all_γ = Vector{Vector{Float64}}(undef,12)
 Threads.@threads for i = 1:12
     id = Threads.threadid()
     println("Thread $id on iteration $i")
-    nummer = a[i] 
+    nummer = a_double[i] 
     if i < 7
-        all_γ[i] = getMinConicWeights(Rtrns,a[i],false)
+        all_γ[i] = getMinConicWeights(Rtrns,a_double[i],false)
         open("data/w_optimgap$nummer-2020.txt", "w") do file
-            writedlm(file, (five_γ[i]))
+            writedlm(file, (all_γ[i]))
         end 
     else
-        all_γ[i] = getMinConicWeights(Rtrns,a[i],true)
+        all_γ[i] = getMinConicWeights(Rtrns,a_double[i],true)
         open("data/w_optimgap$nummer-2020_short.txt", "w") do file
-            writedlm(file, (A[i]))
+            writedlm(file, (all_γ[i]))
         end 
     end
 end
@@ -139,7 +139,11 @@ end
 #     five_γ[i] = vec(readdlm("data/w_optimgap$nummer-2020.txt",Float64))
 #     five_γ_short[i] = vec(readdlm("data/w_optimgap$nummer-2020_short.txt",Float64))
 # end
+five_γ = all_γ[1:6]
+five_γ_short = all_γ[7:12]
 println("All Done")
+
+
 beginning = [1]
 
 k = 1

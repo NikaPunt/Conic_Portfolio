@@ -12,7 +12,7 @@ function getMinVolWeights(AssetArray::Array{Asset},short::Bool=false)::Vector{Fl
     means(a::Vector{Asset}) = Vector{Float64}([ass.mean for ass in a])
     vols(a::Vector{Asset}) = Vector{Float64}([ass.vol for ass in a])
     rtrns(a::Vector{Asset}) = Vector{Vector{Float64}}([ass.rtrns for ass in a])
-    
+    nrAssets = length(AssetArray)
     #Make sure to run this at least once
     println("Calculating Optimal Mean-Variance Portfolio")
     begin
@@ -40,14 +40,18 @@ end
 
 function getMinCVaRWeights(Rtrns::Array{Float64,2},β::Float64=0.95, short::Bool=false)::Vector{Float64}
     q = size(Rtrns,2)
+    nrAssets = size(Rtrns,1)
     mincvar_model = Model();
-    set_optimizer(mincvar_model, Ipopt.Optimizer)
-    set_optimizer_attribute(mincvar_model, "constr_viol_tol", 1e-15)
-    set_optimizer_attribute(mincvar_model, "acceptable_tol", 1e-15)
-    set_optimizer_attribute(mincvar_model, "print_level", 5)
-    # set_optimizer(mincvar_model, Clp.Optimizer) #No primal feasability
-    # set_optimizer_attribute(mincvar_model, "LogLevel", 0)
-    # set_optimizer_attribute(mincvar_model, "Algorithm", 4)
+    if size(Rtrns,1) < 50
+        set_optimizer(mincvar_model, Ipopt.Optimizer)
+        set_optimizer_attribute(mincvar_model, "constr_viol_tol", 1e-15)
+        set_optimizer_attribute(mincvar_model, "acceptable_tol", 1e-15)
+        set_optimizer_attribute(mincvar_model, "print_level", 0)
+    else
+        set_optimizer(mincvar_model, Clp.Optimizer) #No primal feasability
+        set_optimizer_attribute(mincvar_model, "LogLevel", 0)
+        set_optimizer_attribute(mincvar_model, "Algorithm", 4)
+    end
     if (short==false)
         @variable(mincvar_model, w[1:nrAssets] >= 0) # you can unregister w through unregister(model, w)
     else
@@ -74,11 +78,11 @@ include("calcMinVaR.jl")
 
 function getMinVaRWeights(Rtrns::Array{Float64,2},β::Float64=0.95,short::Bool=false)::Vector{Float64}    
     println("Starting VaR Optimization")
-    (w_optimvar, VaR) = calcMinVar(Rtrns,β,true,short)
+    (w_optimvar, VaR) = calcMinVar(Rtrns,β,false,short)
     println("Best $β-VaR-Optimizing Weights: $w_optimvar \nWith VaR: $VaR")
     return w_optimvar
 end
-
+ 
 ## CPT (mean-conic-gap optimization)
 function getMinConicWeights(Rtrns::Matrix{Float64},γ::Float64=0.1,short_bool::Bool=false)::Vector{Float64}
     N = size(Rtrns,1)
@@ -183,16 +187,34 @@ function getMinConicWeights(Rtrns::Matrix{Float64},γ::Float64=0.1,short_bool::B
     return w_optim
 end
 
-function simulateJointReturns(assetShiftedRtrns::Array{Float64,2},M::Int=10000)::Array{Float64,2}
-    println("Starting Independent Component Analysis")
-    begin
-        ica_comps = ICA_assets(assetShiftedRtrns);
-        # X = A*S      where X are the returns, A is mixing matrix and S is independent comps
-        # S = W'*X
-        # W = ica_comps.W;
-        A = ica_comps.mixing;
-        S = ica_comps.indcomps; #these are the independent components. For each row, we need σ, ν, θ. 
+time_from_now(seconds) = round(Int, 10^9 * seconds + time_ns())
+function runtime_limiter(f::Function, args...; timeout=20)
+    t = @async f(args...)
+    end_time = time_from_now(timeout)
+    result = missing
+    while time_ns() <= end_time
+        sleep(0.1)
+        if istaskdone(t)
+            result = fetch(t)
+            break
+        end
     end
+    return result
+end
+
+function simulateJointReturns(assetShiftedRtrns::Array{Float64,2},M::Int=10000)
+    println("Starting Independent Component Analysis")
+    ica_comps = runtime_limiter(ICA_assets,assetShiftedRtrns);
+    if ismissing(ica_comps)
+        println("Can't compute independent components...")
+        return missing
+    end
+    # X = A*S      where X are the returns, A is mixing matrix and S is independent comps
+    # S = W'*X
+    # W = ica_comps.W;
+    A = ica_comps.mixing;
+    S = ica_comps.indcomps; #these are the independent components. For each row, we need σ, ν, θ. 
+    nrAssets = size(assetShiftedRtrns,1)
 
     println("Extracting implied VG parameters on independent components")
     pars = get_params_timeseries_returns(S);
