@@ -31,7 +31,7 @@ begin
     end
 end
 
-allDates = df_list[1]."Date"[251:3744]
+allDates = df_list[1]."Date"[1001:3744]
 for run = 1:100
     println("----------run $run------------$(Dates.now())--------")
     # for i = 1:10
@@ -46,7 +46,7 @@ for run = 1:100
     println("----------Date $theDate------------nr assets $nrAssets----")
     println("Calculating daily returns; ")
 
-    nrCalibrationDays = 250 
+    nrCalibrationDays = 1000 
     nrRealizedReturnDays = 30
 
     sampleRtrns = zeros(nrAssets,nrCalibrationDays) #matrix containing the daily returns of each asset in each row.
@@ -57,7 +57,7 @@ for run = 1:100
         df = df_list2[i]
         name = uniqueNames[i]
         closes = df."Close"
-        rtrns = log.(closes[2:end]./closes[1:end-1])
+        rtrns = (closes[2:end] .- closes[1:end-1] ) ./ closes[1:end-1]
         beforeCrashRtrns = rtrns[y2k_pos-nrCalibrationDays+1:y2k_pos]
         afterCrashRtrns = rtrns[y2k_pos+1:y2k_pos+nrRealizedReturnDays]
         sampleRtrns[i,:] = beforeCrashRtrns
@@ -75,7 +75,13 @@ for run = 1:100
     print("MPT short; ")
     w_optimMPT_short = getMinVolWeights(AssetArray,true)
     print("Calculating returns; ")
-    Rtrns = simulateJointReturns(assetShiftedRtrns, 10000)
+    Rtrns = nothing
+    try
+        Rtrns = simulateJointReturns(assetShiftedRtrns, 10000)
+    catch
+        println("Calculating returns failed; skipping run")
+        continue
+    end
     if ismissing(Rtrns)
         println("Going to next run: ")
         continue
@@ -124,20 +130,190 @@ for run = 1:100
     "w_optimcvar99_short" => w_optimcvar99_short,
     "all_γ" => all_γ
     )
-    save("study/$(floor(Int,Dates.datetime2unix(Dates.now())))/data.jld2", "data", d)
+    save("study1000/$(floor(Int,Dates.datetime2unix(Dates.now())))/data.jld2", "data", d)
 end
 
 
 
+function data2herfindahl(data)
+    result = Vector{Float64}(undef,9)
+    prodexp(x) = (x=max.(x,0);prod(x.^x))
+    result[1] = prodexp(data["w_optimMPT"])
+    result[2] = prodexp(data["w_optimcvar95"])
+    result[3] = prodexp(data["w_optimcvar99"])
+    result[4] = prodexp(data["w_optimvar"])
+    result[5] = prodexp(data["all_γ"][1])
+    result[6] = prodexp(data["all_γ"][2])
+    result[7] = prodexp(data["all_γ"][3])
+    result[8] = prodexp(data["all_γ"][4])
+    result[9] = prodexp(data["all_γ"][5])
+    return result
+end
+
+function data2grossreturns(data,nrDays=60)
+    weights = [data["w_optimMPT"],
+                data["w_optimMPT_short"],
+                data["w_optimcvar95"],
+                data["w_optimcvar95_short"],
+                data["w_optimcvar99"],
+                data["w_optimcvar99_short"],
+                data["w_optimvar"],
+                data["w_optimvar_short"],
+                data["all_γ"][1],
+                data["all_γ"][6],
+                data["all_γ"][2],
+                data["all_γ"][7],
+                data["all_γ"][3],
+                data["all_γ"][8],
+                data["all_γ"][4],
+                data["all_γ"][9],
+                data["all_γ"][5],
+                data["all_γ"][10]
+            ]
+    indices = data["assetIndices"]
+    y2k_pos = data["y2k_pos"]
+    stockdfs = df_list[indices]
+    allGrossRtrns = zeros(length(indices),nrDays)
+    for i = 1:length(indices)
+        df = stockdfs[i]
+        closes = df."Close"
+        rtrns = log.(closes[2:end]./closes[1:end-1])
+        grossRtrns = rtrns[y2k_pos+1:y2k_pos+nrDays]
+        allGrossRtrns[i,:] = grossRtrns
+    end
+    something = zeros(length(weights),nrDays)
+    for (i,weight) in enumerate(weights)
+        something[i,:] = weight'*allGrossRtrns
+    end
+    return something
+end
+
+function data2quarterlyreturn(data,nrDays=63)
+    weights = [data["w_optimMPT"],
+                data["w_optimMPT_short"],
+                data["w_optimcvar95"],
+                data["w_optimcvar95_short"],
+                data["w_optimcvar99"],
+                data["w_optimcvar99_short"],
+                data["w_optimvar"],
+                data["w_optimvar_short"],
+                data["all_γ"][1],
+                data["all_γ"][6],
+                data["all_γ"][2],
+                data["all_γ"][7],
+                data["all_γ"][3],
+                data["all_γ"][8],
+                data["all_γ"][4],
+                data["all_γ"][9],
+                data["all_γ"][5],
+                data["all_γ"][10]
+            ]
+    indices = data["assetIndices"]
+    y2k_pos = data["y2k_pos"]
+    stockdfs = df_list[indices]
+    allGrossRtrns = zeros(length(indices))
+    for i = 1:length(indices)
+        df = stockdfs[i]
+        closes = df."Close"
+        allGrossRtrns[i] = (closes[y2k_pos+nrDays] .- closes[y2k_pos] ) ./ closes[y2k_pos]
+    end
+    something = zeros(length(weights))
+    for (i,weight) in enumerate(weights)
+        something[i] = weight'*allGrossRtrns
+    end
+    return something
+end
 
 
 
-# folders = readdir("study/")
+data2quarterlyreturn(dataList[705])[[1,3,5,7,9,11,13,15,17]]
 
+
+function grossreturn2finalreturn(grossrtrn)
+    expgrossrtrn = exp.(grossrtrn)
+    for i = 2:size(expgrossrtrn,2)
+        expgrossrtrn[:,i] = expgrossrtrn[:,i-1] .* expgrossrtrn[:,i]
+    end
+    return vec(expgrossrtrn[:,end])
+end
+
+# function grossreturn2maxdrawdown(grossrtrn)
+#     index = zeros[prod.(eachrow(grossrtrn[:,1:i].+1)).-1 for i = 1:size(grossrtrn,2)]
+#     return index
+# end
+
+grossreturn2maxdrawdown(data2grossreturns(dataList[1]))
+
+data2grossreturns(dataList[1])
+
+folders = readdir("study/")
+dataList = Vector{Dict{String,Any}}(undef,length(folders))
 # d3 = Dict{String,Any}
 
-# for folder in folders
-#     d3 = load("study/"*folder*"/data.jld2")["data"]
-# end
-# d3["all_γ"]
+for (i,folder) in enumerate(folders)
+    dataList[i] = load("study/"*folder*"/data.jld2")["data"]
+end
 
+herfindahlMatrix = zeros(9,1000) 
+for i = 1:1000
+    herfindahlMatrix[:,i] = data2herfindahl(dataList[i])
+end
+herfindahlMatrix
+
+herfindahlQuantiles = zeros(9,9)
+for i = 1:9
+    herfindahlQuantiles[i,:] = quantile(herfindahlMatrix[i,:],[1,5,10,25,50,75,90,95,99]/100)
+end
+
+herfindahlQuantiles
+
+
+nonWorkingIndices = []
+for i = 1:1000
+    try 
+        data2grossreturns(dataList[i],63)
+    catch
+        println("Doesn't work for run i = $i")
+        append!(nonWorkingIndices,[i])
+    end
+end
+
+nonWorkingIndices
+
+sixtydayindices = setdiff(1:1000,nonWorkingIndices)
+sixtydayreturns = zeros(18,1000)
+for i = sixtydayindices
+    sixtydayreturns[:,i] = ( data2quarterlyreturn(dataList[i]) .+1 ) *100
+end
+
+sixtydayreturns = sixtydayreturns[:,sixtydayindices]
+
+returnQuantiles = zeros(18,9)
+for i = 1:18
+    returnQuantiles[i,:] =quantile(sixtydayreturns[i,:],[1,5,10,25,50,75,90,95,99]/100)
+end
+
+rQDF = DataFrame(returnQuantiles,:auto)
+insertcols!(rQDF,1,:method=>["w_optimMPT",
+"w_optimMPT_short",
+"w_optimcvar95",
+"w_optimcvar95_short",
+"w_optimcvar99",
+"w_optimcvar99_short",
+"w_optimvar",
+"w_optimvar_short",
+"conic 0.14",
+"conic short 0.14",
+"conic 0.4",
+"conic short 0.4",
+"conic 1.0",
+"conic short 1.0",
+"conic 2.6",
+"conic short 2.6",
+"conic 5.0",
+"conic short 5.0"]
+)
+rename(rQDF,["method","1","5","10","25","50","75","90","95","99"])
+
+rQDF2 = rQDF[[1,3,5,7,9,11,13,15,17,2,4,6,8,10,12,14,16,18],:]
+rename(rQDF2,["method","1","5","10","25","50","75","90","95","99"])
