@@ -31,8 +31,8 @@ begin
     end
 end
 
-allDates = df_list[1]."Date"[1001:3744]
-for run = 1:100
+allDates = df_list[1]."Date"[1001:3710];
+for run = 1:500
     println("----------run $run------------$(Dates.now())--------")
     # for i = 1:10
         # println("This is simulation part $i out of 10") 
@@ -95,9 +95,9 @@ for run = 1:100
     print("CVaR 99% short; ")
     w_optimcvar99_short = getMinCVaRWeights(Rtrns,0.99,true)
     print("VaR 95% long; ")
-    w_optimvar = getMinVaRWeights(Rtrns,0.95,false)
+    t_w_optimvar = @async getMinVaRWeights(Rtrns,0.95,false)
     print("VaR 95% short; ")    
-    w_optimvar_short = getMinVaRWeights(Rtrns,0.95,true)
+    t_w_optimvar_short = @async getMinVaRWeights(Rtrns,0.95,true)
 
     a_double = vec([0.14 0.4 1.0 2.6 5.0 0.14 0.4 1.0 2.6 5.0])
     # five_γ = Vector{Vector{Float64}}(undef,5)
@@ -108,29 +108,34 @@ for run = 1:100
         println("Conic $(a_double[i]) on thread $id on iteration $i")
         nummer = a_double[i] 
         if i < 6
-            all_γ[i] = getMinConicWeights(Rtrns,a_double[i],false)
+            all_γ[i] = getMinConicWeights(sampleRtrns,Rtrns,a_double[i],false)
         else
-            all_γ[i] = getMinConicWeights(Rtrns,a_double[i],true)
+            all_γ[i] = getMinConicWeights(sampleRtrns,Rtrns,a_double[i],true)
         end
     end
     # five_γ = all_γ[1:5]
     # five_γ_short = all_γ[6:10]
-
-    d = Dict(
-    "theDate" => theDate,
-    "y2k_pos" => y2k_pos,
-    "assetIndices" => assetIndices,
-    "w_optimMPT" => w_optimMPT,
-    "w_optimMPT_short" => w_optimMPT_short,
-    "w_optimvar" => w_optimvar,
-    "w_optimvar_short" => w_optimvar_short,
-    "w_optimcvar95" => w_optimcvar95,
-    "w_optimcvar95_short" => w_optimcvar95_short,
-    "w_optimcvar99" => w_optimcvar99,
-    "w_optimcvar99_short" => w_optimcvar99_short,
-    "all_γ" => all_γ
-    )
-    save("study1000/$(floor(Int,Dates.datetime2unix(Dates.now())))/data.jld2", "data", d)
+    w_optimvar = nothing
+    w_optimvar_short = nothing
+    if (istaskdone(t_w_optimvar) & istaskdone(t_w_optimvar_short))
+        w_optimvar = fetch(t_w_optimvar)
+        w_optimvar_short = fetch(t_w_optimvar_short)
+        d = Dict(
+        "theDate" => theDate,
+        "y2k_pos" => y2k_pos,
+        "assetIndices" => assetIndices,
+        "w_optimMPT" => w_optimMPT,
+        "w_optimMPT_short" => w_optimMPT_short,
+        "w_optimvar" => w_optimvar,
+        "w_optimvar_short" => w_optimvar_short,
+        "w_optimcvar95" => w_optimcvar95,
+        "w_optimcvar95_short" => w_optimcvar95_short,
+        "w_optimcvar99" => w_optimcvar99,
+        "w_optimcvar99_short" => w_optimcvar99_short,
+        "all_γ" => all_γ
+        )
+        save("study1000/$(floor(Int,Dates.datetime2unix(Dates.now())))/data.jld2", "data", d)
+    end
 end
 
 
@@ -246,12 +251,12 @@ grossreturn2maxdrawdown(data2grossreturns(dataList[1]))
 
 data2grossreturns(dataList[1])
 
-folders = readdir("study/")
+folders = readdir("study1000/")
 dataList = Vector{Dict{String,Any}}(undef,length(folders))
 # d3 = Dict{String,Any}
 
 for (i,folder) in enumerate(folders)
-    dataList[i] = load("study/"*folder*"/data.jld2")["data"]
+    dataList[i] = load("study1000/"*folder*"/data.jld2")["data"]
 end
 
 herfindahlMatrix = zeros(9,1000) 
