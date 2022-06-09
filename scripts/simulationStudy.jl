@@ -1,7 +1,7 @@
 include("HeaderFile.jl")
 println("Importing datasets")
 using Dates
-using HDF5, JLD
+using HDF5
 using JLD2, FileIO
 begin
     filenames = readdir("data/StudyStocks")
@@ -32,7 +32,8 @@ begin
 end
 
 allDates = df_list[1]."Date"[1001:3744]
-for run = 1:100
+
+for run = 1:200
     println("----------run $run------------$(Dates.now())--------")
     # for i = 1:10
         # println("This is simulation part $i out of 10") 
@@ -95,9 +96,9 @@ for run = 1:100
     print("CVaR 99% short; ")
     w_optimcvar99_short = getMinCVaRWeights(Rtrns,0.99,true)
     print("VaR 95% long; ")
-    w_optimvar = getMinVaRWeights(Rtrns,0.95,false)
+    t_w_optimvar = @async getMinVaRWeights(Rtrns,0.95,false)
     print("VaR 95% short; ")    
-    w_optimvar_short = getMinVaRWeights(Rtrns,0.95,true)
+    t_w_optimvar_short = @async getMinVaRWeights(Rtrns,0.95,true)
 
     a_double = vec([0.14 0.4 1.0 2.6 5.0 0.14 0.4 1.0 2.6 5.0])
     # five_γ = Vector{Vector{Float64}}(undef,5)
@@ -115,24 +116,34 @@ for run = 1:100
     end
     # five_γ = all_γ[1:5]
     # five_γ_short = all_γ[6:10]
-
-    d = Dict(
-    "theDate" => theDate,
-    "y2k_pos" => y2k_pos,
-    "assetIndices" => assetIndices,
-    "w_optimMPT" => w_optimMPT,
-    "w_optimMPT_short" => w_optimMPT_short,
-    "w_optimvar" => w_optimvar,
-    "w_optimvar_short" => w_optimvar_short,
-    "w_optimcvar95" => w_optimcvar95,
-    "w_optimcvar95_short" => w_optimcvar95_short,
-    "w_optimcvar99" => w_optimcvar99,
-    "w_optimcvar99_short" => w_optimcvar99_short,
-    "all_γ" => all_γ
-    )
-    save("study1000/$(floor(Int,Dates.datetime2unix(Dates.now())))/data.jld2", "data", d)
+    if (istaskdone(t_w_optimvar) & istaskdone(t_w_optimvar_short))
+        w_optimvar = fetch(t_w_optimvar)
+        w_optimvar_short = fetch(t_w_optimvar_short)
+        d = Dict(
+            "theDate" => theDate,
+            "y2k_pos" => y2k_pos,
+            "assetIndices" => assetIndices,
+            "w_optimMPT" => w_optimMPT,
+            "w_optimMPT_short" => w_optimMPT_short,
+            "w_optimvar" => w_optimvar,
+            "w_optimvar_short" => w_optimvar_short,
+            "w_optimcvar95" => w_optimcvar95,
+            "w_optimcvar95_short" => w_optimcvar95_short,
+            "w_optimcvar99" => w_optimcvar99,
+            "w_optimcvar99_short" => w_optimcvar99_short,
+            "all_γ" => all_γ
+            )
+            save("study1000/$(floor(Int,Dates.datetime2unix(Dates.now())))/data.jld2", "data", d)
+    end
 end
 
+folders = readdir("study1000/")
+sampleSize = length(folders)
+dataList = Vector{Dict{String,Any}}(undef,length(folders))
+
+for (i,folder) in enumerate(folders)
+    dataList[i] = load("study1000/"*folder*"/data.jld2")["data"]
+end
 
 
 function data2herfindahl(data)
@@ -226,9 +237,6 @@ end
 
 
 
-data2quarterlyreturn(dataList[705])[[1,3,5,7,9,11,13,15,17]]
-
-
 function grossreturn2finalreturn(grossrtrn)
     expgrossrtrn = exp.(grossrtrn)
     for i = 2:size(expgrossrtrn,2)
@@ -237,25 +245,124 @@ function grossreturn2finalreturn(grossrtrn)
     return vec(expgrossrtrn[:,end])
 end
 
-# function grossreturn2maxdrawdown(grossrtrn)
-#     index = zeros[prod.(eachrow(grossrtrn[:,1:i].+1)).-1 for i = 1:size(grossrtrn,2)]
-#     return index
-# end
+function index2maxdrawdown(index)
+    n = length(index)
+    drawdowns = []
+    i = 1
+    currentpeak = index[i]
+    currenttrough = index[i]
+    while i <= n
+        if index[i] > currentpeak
+            append!(drawdowns,[[currentpeak,currenttrough]])
+            currentpeak = index[i]
+            currenttrough = index[i]
+        end
+        if index[i] < currenttrough
+            currenttrough = index[i]
+        end
+        i = i + 1
+    end
+    append!(drawdowns,[[currentpeak,currenttrough]])
 
-grossreturn2maxdrawdown(data2grossreturns(dataList[1]))
-
-data2grossreturns(dataList[1])
-
-folders = readdir("study/")
-dataList = Vector{Dict{String,Any}}(undef,length(folders))
-# d3 = Dict{String,Any}
-
-for (i,folder) in enumerate(folders)
-    dataList[i] = load("study/"*folder*"/data.jld2")["data"]
+    #let us find the maximum of all the drawdowns
+    maxdrawdown = 0
+    for (i,currentdrawdown) = enumerate(drawdowns)
+        percentualchange = (currentdrawdown[1]-currentdrawdown[2])/currentdrawdown[1]
+        if percentualchange > maxdrawdown
+            maxdrawdown = percentualchange 
+        end   
+    end
+    return maxdrawdown * 100
 end
 
-herfindahlMatrix = zeros(9,1000) 
-for i = 1:1000
+function data2maxdrawdown(data,nrDays=63)
+    weights = [data["w_optimMPT"],
+                data["w_optimMPT_short"],
+                data["w_optimcvar95"],
+                data["w_optimcvar95_short"],
+                data["w_optimcvar99"],
+                data["w_optimcvar99_short"],
+                data["w_optimvar"],
+                data["w_optimvar_short"],
+                data["all_γ"][1],
+                data["all_γ"][6],
+                data["all_γ"][2],
+                data["all_γ"][7],
+                data["all_γ"][3],
+                data["all_γ"][8],
+                data["all_γ"][4],
+                data["all_γ"][9],
+                data["all_γ"][5],
+                data["all_γ"][10]
+            ]
+    indices = data["assetIndices"]
+    y2k_pos = data["y2k_pos"]
+    stockdfs = df_list[indices]
+    allStockCloses = zeros(length(indices),nrDays)
+    for i = 1:length(indices)
+        df = stockdfs[i]
+        closes = df."Close"
+        allStockCloses[i,:] = closes[y2k_pos+1:y2k_pos+nrDays] / closes[y2k_pos+1]
+    end
+    something = zeros(length(weights),nrDays)
+    for (i,weight) in enumerate(weights)
+        something[i,:] = weight'*allStockCloses
+    end
+    return index2maxdrawdown.(eachrow(something))
+end
+
+
+nonWorkingIndices = []
+maxdrawdownMatrix = zeros(18,sampleSize)
+for i = 1:sampleSize
+    try
+        maxdrawdownMatrix[:,i] = data2maxdrawdown(dataList[i],30)
+    catch
+        println("Doesn't work for i = $i")
+        append!(nonWorkingIndices,[i])
+    end
+end
+maxdrawdownMatrix = maxdrawdownMatrix[:,setdiff(1:sampleSize,nonWorkingIndices)]
+
+maxdrawdownQuantiles = zeros(18,9)
+for i = 1:18
+    maxdrawdownQuantiles[i,:] = quantile(maxdrawdownMatrix[i,:],[1,5,10,25,50,75,90,95,99]/100)
+end
+
+maxdrawdownQuantiles[[1,3,5,7,9,11,13,15,17],:]
+maxdrawdownQuantiles[[2,4,6,8,10,12,14,16,18],:]
+
+mddQDF = DataFrame(maxdrawdownQuantiles,:auto)
+insertcols!(mddQDF,1,:method=>["w_optimMPT",
+"w_optimMPT_short",
+"w_optimcvar95",
+"w_optimcvar95_short",
+"w_optimcvar99",
+"w_optimcvar99_short",
+"w_optimvar",
+"w_optimvar_short",
+"conic 0.14",
+"conic short 0.14",
+"conic 0.4",
+"conic short 0.4",
+"conic 1.0",
+"conic short 1.0",
+"conic 2.6",
+"conic short 2.6",
+"conic 5.0",
+"conic short 5.0"]
+)
+rename(mddQDF,["method","1","5","10","25","50","75","90","95","99"])
+
+mddQDF2 = mddQDF[[1,3,5,7,9,11,13,15,17,2,4,6,8,10,12,14,16,18],:]
+mddQDF2 = rename(mddQDF2,["method","1","5","10","25","50","75","90","95","99"])
+
+
+
+
+
+herfindahlMatrix = zeros(9,sampleSize) 
+for i = 1:sampleSize
     herfindahlMatrix[:,i] = data2herfindahl(dataList[i])
 end
 herfindahlMatrix
@@ -268,22 +375,10 @@ end
 herfindahlQuantiles
 
 
-nonWorkingIndices = []
-for i = 1:1000
-    try 
-        data2grossreturns(dataList[i],63)
-    catch
-        println("Doesn't work for run i = $i")
-        append!(nonWorkingIndices,[i])
-    end
-end
-
-nonWorkingIndices
-
-sixtydayindices = setdiff(1:1000,nonWorkingIndices)
-sixtydayreturns = zeros(18,1000)
+sixtydayindices = setdiff(1:sampleSize,nonWorkingIndices)
+sixtydayreturns = zeros(18,sampleSize)
 for i = sixtydayindices
-    sixtydayreturns[:,i] = ( data2quarterlyreturn(dataList[i]) .+1 ) *100
+    sixtydayreturns[:,i] = ( data2quarterlyreturn(dataList[i],250) .+1 ) *100
 end
 
 sixtydayreturns = sixtydayreturns[:,sixtydayindices]
@@ -316,4 +411,5 @@ insertcols!(rQDF,1,:method=>["w_optimMPT",
 rename(rQDF,["method","1","5","10","25","50","75","90","95","99"])
 
 rQDF2 = rQDF[[1,3,5,7,9,11,13,15,17,2,4,6,8,10,12,14,16,18],:]
-rename(rQDF2,["method","1","5","10","25","50","75","90","95","99"])
+rQDF2 = rename(rQDF2,["method","1","5","10","25","50","75","90","95","99"])
+
