@@ -21,6 +21,7 @@ function getMinVolWeights(AssetArray::Array{Asset},short::Bool=false)::Vector{Fl
         set_optimizer(model, Ipopt.Optimizer)
         set_optimizer_attribute(model, "constr_viol_tol", 1e-15)
         set_optimizer_attribute(model, "acceptable_tol", 1e-15)
+        set_optimizer_attribute(model, "print_level", 0)
         if (short==false)
             @variable(model, w[1:nrAssets] >= 0) # you can unregister w through unregister(model, w)
         else
@@ -84,26 +85,42 @@ function getMinVaRWeights(Rtrns::Array{Float64,2},β::Float64=0.95,short::Bool=f
 end
  
 ## CPT (mean-conic-gap optimization)
-function getMinConicWeights(Rtrns::Matrix{Float64},γ::Float64=0.1,short_bool::Bool=false)::Vector{Float64}
+function getMinConicWeights(actualRtrns::Matrix{Float64},Rtrns::Matrix{Float64},γ::Float64=0.1,short_bool::Bool=false)::Vector{Float64}
     N = size(Rtrns,1)
     M = size(Rtrns,2)
+
     Ψs = [MAXMINVAR(m/M,γ) for m=0:M]
     ΨminusΨ = [Ψs[m]-Ψs[m-1] for m=2:(M+1)]
+
+    VOL_CONSTRAINT_BOOL = false
+    for i = 1:N
+        actualMean = mean(actualRtrns[i,:])
+        requiredMean = -bid(sort(Rtrns[i,:]),ΨminusΨ)
+        if actualMean > requiredMean
+            VOL_CONSTRAINT_BOOL = true
+        end
+    end
+
+
+    
     # RtrnsSorted = vcat([sort(Rtrns[i,:])' for i = 1:N]...)
     # println("Starting optimization with γ == $γ")
     # # optimization
 
     # println("\n---------------------------------------------------------\n")
-    Σ_indcomp_1m = cov(Rtrns') #(T = 1 month) Covariance on the simulated returns
-    Σ_cholupper = cholesky(Σ_indcomp_1m).U
-    # Σ_sample_1d = cov(sampleRtrns') #(T= 1 day) Covariance on the sample returns
-    Vols = zeros(1000000)
-    for i = 1:length(Vols)
-        weights = (rand(N).-0.5)
-        weights = weights/sum(weights)
-        Vols[i] = sqrt(weights'*Σ_indcomp_1m*weights)
+    if VOL_CONSTRAINT_BOOL
+        println("Adding volatility constraint for γ = $γ")
+        Σ_indcomp_1m = cov(Rtrns') #(T = 1 month) Covariance on the simulated returns
+        Σ_cholupper = cholesky(Σ_indcomp_1m).U
+        # Σ_sample_1d = cov(sampleRtrns') #(T= 1 day) Covariance on the sample returns
+        Vols = zeros(1000000)
+        for i = 1:length(Vols)
+            weights = (rand(N).-0.5)
+            weights = weights/sum(weights)
+            Vols[i] = sqrt(weights'*Σ_indcomp_1m*weights)
+        end
+        Q = quantile(Vols*√(12),0.5)
     end
-    Q = quantile(Vols*√(12),0.5)
 
     # Create a new Knitro solver instance
     kc = KNITRO.KN_new()
@@ -130,23 +147,30 @@ function getMinConicWeights(Rtrns::Matrix{Float64},γ::Float64=0.1,short_bool::B
     #KNITRO.KN_set_var_primal_init_values(kc,w_init)
     
     # Add constraints and their bounds
-    KNITRO.KN_add_cons(kc,2)
-    KNITRO.KN_set_con_lobnds(kc,[1.,-KNITRO.KN_INFINITY])
-    KNITRO.KN_set_con_upbnds(kc,[1.,Q/√(12)])
-
+    if VOL_CONSTRAINT_BOOL
+        KNITRO.KN_add_cons(kc,2)
+        KNITRO.KN_set_con_lobnds(kc,[1.,-KNITRO.KN_INFINITY])
+        KNITRO.KN_set_con_upbnds(kc,[1.,Q/√(12)])
+    else
+        KNITRO.KN_add_cons(kc,1)
+        KNITRO.KN_set_con_lobnds(kc,[1.])
+        KNITRO.KN_set_con_upbnds(kc,[1.])
+    end
     # Sum of weights must equal 1.0
     indexVars0 = Cint[0:N-1...]
     coefs0 = repeat([1.0],N)
     KNITRO.KN_add_con_linear_struct(kc, 0, indexVars0, coefs0)
 
     # The following is just setting the constraint of the volatility cap
-    dimA = N;   # A = [1, 0, 0, 0; 0, 0, 2, 0] has two rows */
-    nnzA = N*(N+1) ÷ 2;
-    indexRowsA = vcat([0:i for i = 0:N-1]...)
-    indexVarsA = vcat([repeat([i],i+1) for i = 0:N-1]...)
-    coefsA = vec(vec_triu_loop(Σ_cholupper))
-    b = repeat([0.],N)
-    KNITRO.KN_add_con_L2norm(kc, 1, dimA, nnzA, Cint[indexRowsA...], Cint[indexVarsA...], coefsA, b)
+    if VOL_CONSTRAINT_BOOL
+        dimA = N;   # A = [1, 0, 0, 0; 0, 0, 2, 0] has two rows */
+        nnzA = N*(N+1) ÷ 2;
+        indexRowsA = vcat([0:i for i = 0:N-1]...)
+        indexVarsA = vcat([repeat([i],i+1) for i = 0:N-1]...)
+        coefsA = vec(vec_triu_loop(Σ_cholupper))
+        b = repeat([0.],N)
+        KNITRO.KN_add_con_L2norm(kc, 1, dimA, nnzA, Cint[indexRowsA...], Cint[indexVarsA...], coefsA, b)
+    end
 
     cb = KNITRO.KN_add_objective_callback(kc, callbackEvalF)
 

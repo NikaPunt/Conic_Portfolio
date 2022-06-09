@@ -8,7 +8,7 @@ end
 
 # Reward μ_p = -∑ᵢ(aᵢ⋅bid(Rᵢ))
 function REWARD(w::Vector{Float64},Rs::Matrix{Float64},ΨminusΨ::Vector{Float64})
-    μₚ = -w' * [bid(sort(Rs[1,:]),ΨminusΨ) for i = 1:length(w)]
+    μₚ = -w' * [bid(sort(Rs[i,:]),ΨminusΨ) for i = 1:length(w)]
     return μₚ
 end
 

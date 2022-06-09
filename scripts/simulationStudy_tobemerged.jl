@@ -31,9 +31,8 @@ begin
     end
 end
 
-allDates = df_list[1]."Date"[1001:3744]
-
-for run = 1:200
+allDates = df_list[1]."Date"[1001:3710];
+for run = 1:500
     println("----------run $run------------$(Dates.now())--------")
     # for i = 1:10
         # println("This is simulation part $i out of 10") 
@@ -109,31 +108,33 @@ for run = 1:200
         println("Conic $(a_double[i]) on thread $id on iteration $i")
         nummer = a_double[i] 
         if i < 6
-            all_γ[i] = getMinConicWeights(Rtrns,a_double[i],false)
+            all_γ[i] = getMinConicWeights(sampleRtrns,Rtrns,a_double[i],false)
         else
-            all_γ[i] = getMinConicWeights(Rtrns,a_double[i],true)
+            all_γ[i] = getMinConicWeights(sampleRtrns,Rtrns,a_double[i],true)
         end
     end
     # five_γ = all_γ[1:5]
     # five_γ_short = all_γ[6:10]
+    w_optimvar = nothing
+    w_optimvar_short = nothing
     if (istaskdone(t_w_optimvar) & istaskdone(t_w_optimvar_short))
         w_optimvar = fetch(t_w_optimvar)
         w_optimvar_short = fetch(t_w_optimvar_short)
         d = Dict(
-            "theDate" => theDate,
-            "y2k_pos" => y2k_pos,
-            "assetIndices" => assetIndices,
-            "w_optimMPT" => w_optimMPT,
-            "w_optimMPT_short" => w_optimMPT_short,
-            "w_optimvar" => w_optimvar,
-            "w_optimvar_short" => w_optimvar_short,
-            "w_optimcvar95" => w_optimcvar95,
-            "w_optimcvar95_short" => w_optimcvar95_short,
-            "w_optimcvar99" => w_optimcvar99,
-            "w_optimcvar99_short" => w_optimcvar99_short,
-            "all_γ" => all_γ
-            )
-            save("study1000/$(floor(Int,Dates.datetime2unix(Dates.now())))/data.jld2", "data", d)
+        "theDate" => theDate,
+        "y2k_pos" => y2k_pos,
+        "assetIndices" => assetIndices,
+        "w_optimMPT" => w_optimMPT,
+        "w_optimMPT_short" => w_optimMPT_short,
+        "w_optimvar" => w_optimvar,
+        "w_optimvar_short" => w_optimvar_short,
+        "w_optimcvar95" => w_optimcvar95,
+        "w_optimcvar95_short" => w_optimcvar95_short,
+        "w_optimcvar99" => w_optimcvar99,
+        "w_optimcvar99_short" => w_optimcvar99_short,
+        "all_γ" => all_γ
+        )
+        save("study1000/$(floor(Int,Dates.datetime2unix(Dates.now())))/data.jld2", "data", d)
     end
 end
 
@@ -312,31 +313,12 @@ function data2maxdrawdown(data,nrDays=63)
 end
 
 
+folders = readdir("study1000/")
+dataList = Vector{Dict{String,Any}}(undef,length(folders))
+# d3 = Dict{String,Any}
 
-
-nonWorkingIndices = []
-maxdrawdownMatrix = zeros(18,sampleSize)
-for i = 1:sampleSize
-    try
-        maxdrawdownMatrix[:,i] = data2maxdrawdown(dataList[i],63)
-    catch
-        println("Doesn't work for i = $i")
-        append!(nonWorkingIndices,[i])
-    end
-end
-maxdrawdownMatrix = maxdrawdownMatrix[:,setdiff(1:sampleSize,nonWorkingIndices)]
-
-X₁ = mean(maxdrawdownMatrix[1,:])
-X₂ = mean(maxdrawdownMatrix[17,:])
-
-var₁ = var(maxdrawdownMatrix[1,:])
-var₂ = var(maxdrawdownMatrix[17,:])
-
-(X₁-X₂)/sqrt(var₁+var₂)
-
-maxdrawdownQuantiles = zeros(18,9)
-for i = 1:18
-    maxdrawdownQuantiles[i,:] = quantile(maxdrawdownMatrix[i,:],[1,5,10,25,50,75,90,95,99]/100)
+for (i,folder) in enumerate(folders)
+    dataList[i] = load("study1000/"*folder*"/data.jld2")["data"]
 end
 
 maxdrawdownQuantiles[[1,3,5,7,9,11,13,15,17],:]
@@ -384,19 +366,11 @@ end
 
 herfindahlQuantiles
 
-X₁ = mean(herfindahlMatrix[1,:])
-X₂ = mean(herfindahlMatrix[9,:])
-
-var₁ = var(herfindahlMatrix[1,:])
-var₂ = var(herfindahlMatrix[9,:])
-
-(X₁-X₂)/sqrt(var₁+var₂)
-
 
 sixtydayindices = setdiff(1:sampleSize,nonWorkingIndices)
 sixtydayreturns = zeros(18,sampleSize)
 for i = sixtydayindices
-    sixtydayreturns[:,i] = ( data2quarterlyreturn(dataList[i],63) .+1 ) *100
+    sixtydayreturns[:,i] = ( data2quarterlyreturn(dataList[i],250) .+1 ) *100
 end
 
 sixtydayreturns = sixtydayreturns[:,sixtydayindices]
@@ -405,15 +379,6 @@ returnQuantiles = zeros(18,9)
 for i = 1:18
     returnQuantiles[i,:] =quantile(sixtydayreturns[i,:],[1,5,10,25,50,75,90,95,99]/100)
 end
-
-X₁ = mean(maxdrawdownMatrix[1,:])
-X₂ = mean(maxdrawdownMatrix[13,:])
-
-var₁ = var(maxdrawdownMatrix[1,:])
-var₂ = var(maxdrawdownMatrix[13,:])
-
-(X₁-X₂)/sqrt(var₁+var₂)
-
 
 rQDF = DataFrame(returnQuantiles,:auto)
 insertcols!(rQDF,1,:method=>["w_optimMPT",
