@@ -93,13 +93,16 @@ function getMinConicWeights(actualRtrns::Matrix{Float64},Rtrns::Matrix{Float64},
     ΨminusΨ = [Ψs[m]-Ψs[m-1] for m=2:(M+1)]
 
     VOL_CONSTRAINT_BOOL = false
-    for i = 1:N
-        actualMean = mean(actualRtrns[i,:])
-        requiredMean = -bid(sort(Rtrns[i,:]),ΨminusΨ)
-        if actualMean > requiredMean
-            VOL_CONSTRAINT_BOOL = true
-        end
+    if short_bool
+        VOL_CONSTRAINT_BOOL = true
     end
+    # for i = 1:N
+    #     actualMean = mean(actualRtrns[i,:])
+    #     requiredMean = -bid(sort(Rtrns[i,:]),ΨminusΨ)
+    #     if actualMean > requiredMean
+    #         VOL_CONSTRAINT_BOOL = true
+    #     end
+    # end
 
 
     
@@ -109,7 +112,7 @@ function getMinConicWeights(actualRtrns::Matrix{Float64},Rtrns::Matrix{Float64},
 
     # println("\n---------------------------------------------------------\n")
     if VOL_CONSTRAINT_BOOL
-        println("Adding volatility constraint for γ = $γ")
+        # println("Adding volatility constraint for γ = $γ")
         Σ_indcomp_1m = cov(Rtrns') #(T = 1 month) Covariance on the simulated returns
         Σ_cholupper = cholesky(Σ_indcomp_1m).U
         # Σ_sample_1d = cov(sampleRtrns') #(T= 1 day) Covariance on the sample returns
@@ -119,7 +122,7 @@ function getMinConicWeights(actualRtrns::Matrix{Float64},Rtrns::Matrix{Float64},
             weights = weights/sum(weights)
             Vols[i] = sqrt(weights'*Σ_indcomp_1m*weights)
         end
-        Q = quantile(Vols*√(12),0.5)
+        Q = quantile(Vols*√(12),0.5)/sqrt(12)
     end
 
     # Create a new Knitro solver instance
@@ -137,11 +140,11 @@ function getMinConicWeights(actualRtrns::Matrix{Float64},Rtrns::Matrix{Float64},
     # Add vars and bounds
     KNITRO.KN_add_vars(kc,N)
     if (short_bool==true)
-        KNITRO.KN_set_var_lobnds(kc,repeat([-KNITRO.KN_INFINITY],N))
+        KNITRO.KN_set_var_lobnds(kc,repeat([-10.0],N))
     else
         KNITRO.KN_set_var_lobnds(kc,(repeat([0.0],N)))
     end
-    KNITRO.KN_set_var_upbnds(kc,repeat([KNITRO.KN_INFINITY],N))
+    KNITRO.KN_set_var_upbnds(kc,repeat([10.0],N))
 
     # Set Initial point (optional)
     #KNITRO.KN_set_var_primal_init_values(kc,w_init)
@@ -150,7 +153,7 @@ function getMinConicWeights(actualRtrns::Matrix{Float64},Rtrns::Matrix{Float64},
     if VOL_CONSTRAINT_BOOL
         KNITRO.KN_add_cons(kc,2)
         KNITRO.KN_set_con_lobnds(kc,[1.,-KNITRO.KN_INFINITY])
-        KNITRO.KN_set_con_upbnds(kc,[1.,Q/√(12)])
+        KNITRO.KN_set_con_upbnds(kc,[1.,Q])
     else
         KNITRO.KN_add_cons(kc,1)
         KNITRO.KN_set_con_lobnds(kc,[1.])
