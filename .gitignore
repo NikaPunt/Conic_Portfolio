@@ -8,7 +8,6 @@ datasets/
 scripts/CPT.jl
 scripts/CPT_10C.jl
 scripts/CPT_Optimization.jl
-scripts/CVaR_Optimization.jl
 scripts/CVaR*
 scripts/MPT*
 scripts/PlotHistogramsEachMethod.jl
