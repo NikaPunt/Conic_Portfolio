@@ -12,12 +12,16 @@ The code for 2 uses a heuristic outlined in [1].
 The code for 4 is based on the algorithm outlined in [2].
 
 
-![Conic Minimum Risk Frontier](https://imgur.com/a/TreMpJ5)
+![Conic Minimum Risk Frontier](https://i.imgur.com/3V5xtDD.png)
+
+
+
 
 
 
 
 
 [1] Larsen, N., Mausser, H., and Uryasev, S. (2002). Algorithms for optimization of value-at-risk. In Financial engineering, E-commerce and supply chain, pages 19–46. Springer.
+
 [2] Madan, D. B. (2016). Conic portfolio theory. International Journal of Theoretical and Applied
 Finance, 19(03):1650019
