@@ -17,7 +17,8 @@ The code for 4 is based on the algorithm outlined in [2].
 
 
 
-
+! Disclaimer !
+knitro artelys was used to perform the optimization of the nonlinear optimization problem posed by the conic portfolio optimization. 
 
 
 
