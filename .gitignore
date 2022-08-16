@@ -3,3 +3,22 @@ datasets/
 
 #in plots we have tons of svg plots that I don't want to show
 *.svg
+
+#scripts that don't matter
+scripts/CPT.jl
+scripts/CPT_10C.jl
+scripts/CPT_Optimization.jl
+scripts/CVaR_Optimization.jl
+scripts/CVaR*
+scripts/MPT*
+scripts/PlotHistogramsEachMethod.jl
+scripts/VaR*
+scripts/bt.jl
+scripts/implied_moments.jl
+scripts/options.jl
+scripts/preprocess_crypto.jl
+scripts/profilingCode.jl
+scripts/rand.jl
+scripts/simulationStudy_tobemerged.jl
+scripts/test_toolong.jl
+scripts/testDifferentConics.jl
