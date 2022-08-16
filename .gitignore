@@ -1,5 +1,5 @@
 #datasets is from early on and no longer used.
-datasets
+datasets/
 
 #in plots we have tons of svg plots that I don't want to show
 *.svg
