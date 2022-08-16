@@ -1,4 +1,4 @@
-const timeFactor = 30.437 # 30.437 converts daily to monthly returns for crypto, take ~20 for stocks.
+const timeFactor = 20 # 30.437 converts daily to monthly returns for crypto, take ~20 for stocks.
 
 ## MPT (mean-variance optimization)
 struct Asset
