@@ -6,6 +6,7 @@ The code in this repository was built to calculate four different portfolios:
 2. Value-at-Risk (VaR) portfolio
 3. Tail VaR (also named conditional VaR) portfolio
 4. Conic portfolio
+
 The algorithms can be found in getWeights.jl
 
 The code for 1 and 3 are not based on prior distributional assumptions. We can calculate those directly on the return data of a portfolio.
